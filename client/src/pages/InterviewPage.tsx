@@ -38,6 +38,8 @@ function InterviewPage() {
         setInterval(async () => {
           const detections = await detectAllFaces(video)
             .withFaceLandmarks()
+            .withAgeAndGender()
+            .withFaceDescriptors()
             .withFaceExpressions(); // Detect expressions
 
           const resizedDetections = resizeResults(detections, displaySize);
@@ -52,6 +54,9 @@ function InterviewPage() {
           // Log expressions (optional)
           if (detections.length > 0) {
             console.log(detections[0].expressions);
+            console.log(detections[0].age);
+            console.log(detections[0].gender);
+            console.log(detections[0].genderProbability);
           }
         }, 1000);
       });
