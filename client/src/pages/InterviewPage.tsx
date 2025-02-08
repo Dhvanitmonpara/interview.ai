@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   nets,
   createCanvasFromMedia,
@@ -63,6 +63,9 @@ function evaluateEmotionalState(expressions: ExpressionScores): string {
 }
 
 function InterviewPage() {
+
+  const [emotionalState, setEmotionalState] = useState('undetermined');
+
   const MODEL_URL = '/models'; // Path where models are stored
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -115,9 +118,10 @@ function InterviewPage() {
 
         if (detections && detections.length > 0) {
           const { expressions } = detections[0];
-          const emotionalState = evaluateEmotionalState(expressions);
-          console.log(`User appears ${emotionalState}!`);
-          // Optionally: update UI elements based on the emotionalState
+          const newEmotionalState = evaluateEmotionalState(expressions);
+          setEmotionalState((prevState) =>
+            prevState !== newEmotionalState ? newEmotionalState : prevState
+          );
         } else {
           console.warn('No face detected 😢');
         }
@@ -160,9 +164,21 @@ function InterviewPage() {
   }, []);
 
   return (
-    <div>
-      <h3>InterviewPage</h3>
-      <video ref={videoRef} id="video" autoPlay playsInline></video>
+    <div className="">
+      <h3>Interview Analysis</h3>
+      <div className="video-wrapper">
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          aria-label="Live camera feed for emotion detection"
+        />
+        <canvas ref={canvasRef} aria-label="Face detection overlay" />
+      </div>
+      <div className="emotional-state">
+        Current detected state: <strong>{emotionalState}</strong>
+      </div>
     </div>
   );
 }
