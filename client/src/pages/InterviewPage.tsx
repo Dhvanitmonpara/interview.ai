@@ -7,6 +7,7 @@ import {
   matchDimensions,
   draw,
 } from 'face-api.js';
+import { toast } from '@/hooks/use-toast';
 
 type ExpressionScores = {
   neutral: number;
@@ -17,6 +18,45 @@ type ExpressionScores = {
   disgusted: number;
   surprised: number;
 };
+
+function isLightingGood(video: HTMLVideoElement, threshold = 80): boolean {
+  // Check if the video dimensions are available
+  if (video.videoWidth === 0 || video.videoHeight === 0) {
+    console.warn("Video dimensions are not available yet.");
+    return false;
+  }
+
+  // Create an off-screen canvas with the same dimensions as the video.
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return false;
+
+  // Draw the current video frame onto the canvas.
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  // Get pixel data.
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imageData.data;
+  let totalLuminance = 0;
+  const pixelCount = data.length / 4;
+
+  // Calculate the average luminance.
+  // Luminance formula: 0.299 * R + 0.587 * G + 0.114 * B
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+    totalLuminance += luminance;
+  }
+  const avgLuminance = totalLuminance / pixelCount;
+  console.log("avgLuminance:", avgLuminance);
+  
+  // Return true if the average brightness is above the threshold.
+  return avgLuminance > threshold;
+}
 
 function evaluateEmotionalState(expressions: ExpressionScores): string {
   // Define the weight map for each derived emotional state.
@@ -150,6 +190,18 @@ function InterviewPage() {
     // Copy the refs to local variables for cleanup.
     const videoElement = videoRef.current;
     const canvasElement = canvasRef.current;
+
+    videoRef.current?.addEventListener('loadedmetadata', () => {
+      if (videoRef.current) {
+        const lightingGood = isLightingGood(videoRef.current);
+        if (!lightingGood) {
+          toast({
+            title: "🌞 Poor lighting detected",
+          });
+        }
+      }
+    });
+
     return () => {
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
       if (videoElement?.srcObject) {
@@ -176,7 +228,7 @@ function InterviewPage() {
         />
         <canvas ref={canvasRef} aria-label="Face detection overlay" />
       </div>
-      <div className="emotional-state">
+      <div className="mt-4 px-4 text-xl">
         Current detected state: <strong>{emotionalState}</strong>
       </div>
     </div>

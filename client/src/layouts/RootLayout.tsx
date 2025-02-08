@@ -1,4 +1,5 @@
 import Header from "@/components/general/Header"
+import { Toaster } from "@/components/ui/toaster"
 import { Outlet } from "react-router-dom"
 
 function RootLayout() {
@@ -6,6 +7,7 @@ function RootLayout() {
     <main className="w-screen min-h-screen overflow-y-hidden">
       <Header />
       <Outlet />
+      <Toaster />
     </main>
   )
 }
