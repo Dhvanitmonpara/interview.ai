@@ -6,7 +6,6 @@ const createSession = asyncHandler(async (req, res) => {
 
   try {
 
-
     return res.status(200).json({
       success: true,
       messageId: mailResponse.messageId,
