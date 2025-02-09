@@ -3,9 +3,10 @@ import {
   nets,
   createCanvasFromMedia,
   resizeResults,
-  detectAllFaces,
+  // detectAllFaces,
   matchDimensions,
   draw,
+  detectSingleFace,
 } from 'face-api.js';
 import { toast } from '@/hooks/use-toast';
 import { ExpressionScores } from '@/types/ExpressionScores';
@@ -120,10 +121,12 @@ function Webcam({
   async function startWebcam() {
     if (!videoRef.current) return;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 640, height: 480 }
+      });
       videoRef.current.srcObject = stream;
     } catch (err) {
-      console.error('Error accessing webcam:', err);
+      console.error("Error accessing webcam:", err);
     }
   }
 
@@ -148,30 +151,35 @@ function Webcam({
       const displaySize = { width: video.videoWidth, height: video.videoHeight };
       matchDimensions(canvas, displaySize);
 
+      let lastDetectionTime = 0;
+      const detectionInterval = 300;
+
       const processVideoFrame = async () => {
-        const detections = await detectAllFaces(video)
-          .withFaceLandmarks()      // Needed for drawing & further analysis
-          .withFaceExpressions();   // Tracks emotions
+        const now = performance.now();
+        if (now - lastDetectionTime > detectionInterval) {
+          lastDetectionTime = now;
+          const detection = await detectSingleFace(video)
+            .withFaceLandmarks()
+            .withFaceExpressions();
 
-        if (detections && detections.length > 0) {
-          const { expressions } = detections[0];
-          const newEmotionalState = evaluateEmotionalState(expressions);
-          onEmotionalStateChange(newEmotionalState);
-        } else {
-          console.warn('No face detected 😢');
-        }
+          if (detection) {
+            const { expressions } = detection;
+            const newEmotionalState = evaluateEmotionalState(expressions);
+            onEmotionalStateChange(newEmotionalState);
+          } else {
+            console.warn("No face detected 😢");
+          }
 
-        // Draw the detections on the canvas.
-        const resizedDetections = detections ? resizeResults(detections, displaySize) : [];
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          if (resizedDetections.length > 0) {
-            draw.drawDetections(canvas, resizedDetections);
-            draw.drawFaceExpressions(canvas, resizedDetections);
+          const resizedDetection = detection ? resizeResults(detection, displaySize) : [];
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (resizedDetection) {
+              draw.drawDetections(canvas, resizedDetection);
+              draw.drawFaceExpressions(canvas, resizedDetection);
+            }
           }
         }
-
         animationFrameId = requestAnimationFrame(processVideoFrame);
       };
 
