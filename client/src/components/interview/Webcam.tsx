@@ -9,6 +9,7 @@ import {
 } from 'face-api.js';
 import { toast } from '@/hooks/use-toast';
 import { ExpressionScores } from '@/types/ExpressionScores';
+import { useLocation } from 'react-router-dom';
 
 function isLightingGood(video: HTMLVideoElement, threshold = 80): boolean {
   // Check if the video dimensions are available
@@ -100,6 +101,8 @@ function Webcam({
   onEmotionalStateChange: (emotionalState: string) => void;
 }) {
 
+  const location = useLocation()
+
   const MODEL_URL = '/models'; // Path where models are stored
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -177,6 +180,8 @@ function Webcam({
   }
 
   useEffect(() => {
+    if (!location.pathname.includes("/interview")) return;
+
     detectFace();
 
     // Copy the refs to local variables for cleanup.
@@ -195,28 +200,45 @@ function Webcam({
     });
 
     return () => {
+      // Cancel animation loop
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
+
+      // Stop video stream
       if (videoElement?.srcObject) {
         (videoElement.srcObject as MediaStream)
           .getTracks()
           .forEach((track) => track.stop());
+        videoElement.srcObject = null; // Remove reference
       }
+
+      // Remove canvas
       if (canvasElement && canvasElement.parentNode) {
         canvasElement.parentNode.removeChild(canvasElement);
       }
+      canvasRef.current = null;
+
+      try {
+        nets.ssdMobilenetv1?.dispose();
+        nets.faceLandmark68Net?.dispose();
+        nets.faceExpressionNet?.dispose();
+      } catch (error) {
+        console.warn("Error disposing models:", error);
+      }
     };
-  }, []);
+  }, [location.pathname]);
 
   return (
     <div>
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted
-        aria-label="Live camera feed for emotion detection"
-      />
-      <canvas ref={canvasRef} aria-label="Face detection overlay" />
+      {location.pathname.includes("/interview") && <>
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          aria-label="Live camera feed for emotion detection"
+        />
+        <canvas ref={canvasRef} aria-label="Face detection overlay" />
+      </>}
     </div>
   )
 }
