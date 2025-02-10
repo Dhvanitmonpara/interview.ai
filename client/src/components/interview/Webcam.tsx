@@ -152,7 +152,7 @@ function Webcam({
       matchDimensions(canvas, displaySize);
 
       let lastDetectionTime = 0;
-      const detectionInterval = 300;
+      const detectionInterval = 3000; // interval for face detection
 
       const processVideoFrame = async () => {
         const now = performance.now();

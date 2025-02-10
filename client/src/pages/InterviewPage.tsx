@@ -1,12 +1,49 @@
 import Webcam from "@/components/interview/Webcam";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useState } from "react";
+import { toast } from "@/hooks/use-toast";
+import useSocket from "@/socket/useSocket";
+import useSocketStore from "@/store/socketStore";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function InterviewPage() {
 
   const [emotionalState, setEmotionalState] = useState('undetermined');
+
+  const socket = useSocket()
+  const { setSocketId } = useSocketStore()
+
+  useEffect(() => {
+    const handleConnect = () => {
+      setSocketId(socket.id || "");
+    };
+
+
+
+    const handleDisconnect = () => {
+      setSocketId("");
+      toast({ title: "You have been disconnected" });
+    };
+
+    const handleConnectError = (error: unknown) => {
+      if (error instanceof Error) {
+        console.error("Connection Error:", error.message);
+      } else {
+        console.error("Connection Error:", error);
+      }
+    };
+
+    socket.on("connect", handleConnect);
+    socket.on("disconnect", handleDisconnect);
+    socket.on("connect_error", handleConnectError);
+
+    return () => {
+      socket.off("connect", handleConnect);
+      socket.off("disconnect", handleDisconnect);
+      socket.off("connect_error", handleConnectError);
+    };
+  }, [setSocketId, socket]);
 
   const navigate = useNavigate()
 

@@ -3,11 +3,16 @@ import {
     createSession,
     updateSession,
     deleteSession,
-    getSession
+    getSession,
+    getSessionData,
+    getAllSessions,
 } from "../controllers/session.controller.js";
 
 const router = Router()
 
-router.route('/').post(createSession).delete(deleteSession).patch(updateSession).get(getSession)
+router.route('/').post(createSession).delete(deleteSession)
+router.route('/data/:socketId').get(getSessionData)
+router.route('/:userId').get(getSession).patch(updateSession)
+router.route('/all/:userId').get(getAllSessions)
 
 export default router;

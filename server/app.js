@@ -6,10 +6,10 @@ import { Server } from 'socket.io';
 const app = express()
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: {
-    origin: process.env.ACCESS_CONTROL_ORIGIN, // Replace with your frontend URL
-    methods: ["GET", "POST"],
-  },
+    cors: {
+        origin: process.env.ACCESS_CONTROL_ORIGIN, // Replace with your frontend URL
+        methods: ["GET", "POST"],
+    },
 });
 const corsOptions = {
     origin: process.env.ACCESS_CONTROL_ORIGIN,
@@ -23,34 +23,54 @@ app.use(cors(corsOptions))
 app.use(express.json({ limit: "16kb" }))
 app.use(express.urlencoded({ extended: true, limit: "16kb" }))
 app.use(express.static("public"))
-app.options('*', cors()); 
+app.options('*', cors());
 
-const onlineUsers = new Map();
+const runningInterviewSession = new Map();
 
 io.on('connection', (socket) => {
-    const userId = socket.handshake.query.userId;
+    console.log(`User connected: ${socket.id}`);
 
-    onlineUsers.set(userId, socket);
-    console.log(`User ${userId} connected`);
+    // Initial interview data for the session
+    const initialInterviewData = {
+        userId: socket.id, // Using socket ID for tracking
+        responses: [],
+        startTime: Date.now(),
+        endTime: null,
+    };
 
-    io.emit('userConnected', { userId });
+    // Store the session data
+    runningInterviewSession.set(socket.id, initialInterviewData);
 
-    sendPendingNotifications(userId);
+    // Notify everyone that a user has connected
+    io.emit('user-connected', { socketId: socket.id });
 
+    // Handle incoming interview data
+    socket.on("interview-data", (data) => {
+        if (runningInterviewSession.has(socket.id)) {
+            runningInterviewSession.get(socket.id).responses.push(data);
+            console.log(`Data received from ${socket.id}:`, data);
+        }
+    });
+
+    // Handle interview completion
+    socket.on("interview-complete", () => {
+        if (runningInterviewSession.has(socket.id)) {
+            runningInterviewSession.get(socket.id).endTime = Date.now();
+            console.log(`Interview completed for ${socket.id}`);
+        }
+    });
+
+    // Handle disconnection
     socket.on('disconnect', () => {
-        onlineUsers.delete(userId); // Remove user from online list
-        console.log(`User ${userId} disconnected`);
+        console.log(`User disconnected: ${socket.id}`);
 
-        io.emit('userDisconnected', { userId });
+        // Remove session data
+        runningInterviewSession.delete(socket.id);
+
+        // Notify all clients
+        io.emit('user-disconnected', { socketId: socket.id });
     });
 });
-
-async function sendPendingNotifications(userId) {
-    const notifications = await getPendingNotificationsFromDB(userId);
-    if (notifications.length > 0) {
-        onlineUsers.get(userId).emit('pendingNotifications', notifications);
-    }
-}
 
 //routes import
 import sessionRouter from "./routes/session.routes.js"
@@ -60,4 +80,4 @@ app.use("/api/v1/sessions", sessionRouter)
 
 // http://localhost:8000/api/v1/users/register
 
-export { app }
+export { app, runningInterviewSession }
