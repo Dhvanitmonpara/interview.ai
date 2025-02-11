@@ -1,3 +1,4 @@
+import Timer from "@/components/interview/Timer";
 import Webcam from "@/components/interview/Webcam";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -14,12 +15,36 @@ function InterviewPage() {
   const socket = useSocket()
   const { setSocketId } = useSocketStore()
 
+  const handleVideoTranscription = () => {
+    try {
+      // TODO: Convert video into text and return it
+      return "";
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({ title: error.message })
+      } else {
+        toast({ title: "Something went wrong while processing video" })
+        console.log(error)
+      }
+      return null;
+    }
+  }
+
+  const handleSendAnswerForEvaluation = () => {
+    const transcribedText = handleVideoTranscription();
+
+    if (!transcribedText) {
+      toast({ title: "Something went wrong while processing video" })
+      return;
+    }
+
+    socket.emit("interview-answer", transcribedText);
+  }
+
   useEffect(() => {
     const handleConnect = () => {
       setSocketId(socket.id || "");
     };
-
-
 
     const handleDisconnect = () => {
       setSocketId("");
@@ -53,10 +78,15 @@ function InterviewPage() {
     }
   };
 
+  const handleResetQuestion = () => {
+    handleSendAnswerForEvaluation();
+  }
+
   return (
     <div className="">
       <h3>Interview Analysis</h3>
       <div className="flex space-x-2">
+        <Timer onReset={handleResetQuestion} />
         <Button>Skip time</Button>
         <Dialog>
           <DialogTrigger>
