@@ -16,11 +16,13 @@ const mockQuestion = {
 
 function InterviewPage() {
 
+  const socket = useSocket()
+  const { setSocketId } = useSocketStore()
+
   const [emotionalState, setEmotionalState] = useState('undetermined');
   const [currentQuestionAnswer, setCurrentQuestionAnswer] = useState<QuestionAnswerType | null>(mockQuestion);
 
-  const socket = useSocket()
-  const { setSocketId } = useSocketStore()
+  const navigate = useNavigate()
 
   const handleVideoTranscription = async () => {
     try {
@@ -37,7 +39,7 @@ function InterviewPage() {
     }
   }
 
-  const handleSendAnswerForEvaluation = async () => {
+  const sendAnswerForEvaluation = async () => {
     const transcribedText = await handleVideoTranscription();
 
     if (!transcribedText) {
@@ -48,6 +50,16 @@ function InterviewPage() {
     // TODO: update this to send more data
     socket.emit("interview-answer", transcribedText);
   }
+
+  const handleResetQuestion = async () => {
+    await sendAnswerForEvaluation();
+  }
+
+  const handleEmotionalStateChange = (newState: string) => {
+    if (newState !== emotionalState) {
+      setEmotionalState(newState);
+    }
+  };
 
   useEffect(() => {
     const handleConnect = () => {
@@ -84,21 +96,11 @@ function InterviewPage() {
     };
   }, [setSocketId, socket]);
 
-  const navigate = useNavigate()
-
-  const handleEmotionalStateChange = (newState: string) => {
-    if (newState !== emotionalState) {
-      setEmotionalState(newState);
-    }
-  };
-
-  const handleResetQuestion = async () => {
-    await handleSendAnswerForEvaluation();
-  }
-
   return (
     <div className="">
       <h3>Interview Analysis</h3>
+
+      {/* Header */}
       <div className="flex space-x-2">
         <Timer currentQuestionAnswer={currentQuestionAnswer} onReset={handleResetQuestion} />
         <Button onClick={handleResetQuestion}>Skip time</Button>
@@ -124,7 +126,10 @@ function InterviewPage() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* webcam */}
       <Webcam onEmotionalStateChange={handleEmotionalStateChange} />
+
       <div className="mt-4 px-4 text-xl">
         Current detected state: <strong>{emotionalState}</strong>
       </div>
