@@ -1,9 +1,10 @@
-export type RoundType = "aptitude" | "coding" | "interview" | "other";
+export type RoundType = "aptitude" | "technical" | "behavioral" | "system-design";
 
 export type QuestionAnswerType = {
   question: string;
   answer: string | string[] | { code: string; language: string };
   round: RoundType;
+  index: number
 };
 
 export type JobRoleType =

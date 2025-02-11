@@ -7,13 +7,22 @@ import useSocket from "@/socket/useSocket";
 import useInterviewStore from "@/store/interviewStore";
 import useSocketStore from "@/store/socketStore";
 import { QuestionAnswerType, RoundType } from "@/types/InterviewData";
+import { generateNextQuestion } from "@/utils/handleQuestionAnswer";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const mockQuestion = {
   question: "What is the output of console.log(\"2 + 2\")?",
   answer: "2 + 2",
-  round: "aptitude" as RoundType
+  round: "aptitude" as RoundType,
+  index: 1
+}
+
+const selectRound = (questionIndex: number): RoundType => {
+  if (questionIndex >= 0 && questionIndex <= 2) return "aptitude"
+  if (questionIndex >= 3 && questionIndex <= 5) return "behavioral"
+  if (questionIndex >= 6 && questionIndex <= 8) return "technical"
+  return "system-design"
 }
 
 function InterviewPage() {
@@ -42,27 +51,42 @@ function InterviewPage() {
     }
   }
 
-  const sendAnswerForEvaluation = useCallback(async () => {
-    const transcribedText = await handleVideoTranscription();
+  const getNextQuestion = useCallback(async (transcribedText: string) => {
+    if (!candidate) return
+    const data = {
+      yearsOfExperience: candidate.yearsOfExperience,
+      candidateName: candidate.name,
+      jobRole: candidate.jobRole,
+      skills: candidate.skills,
+      round: "screening" as RoundType,
+      previousAnswer: transcribedText
+    }
+    const text = await generateNextQuestion(data)
+    if (!text) {
+      toast({ title: "Something went wrong while generating question" })
+      return
+    }
+    return text
+  }, [candidate])
 
+  const handleResetQuestion = async () => {
+    const transcribedText = await handleVideoTranscription();
     if (!transcribedText) {
       toast({ title: "Something went wrong while processing video" })
       return;
     }
 
-    // TODO: update this to send more data
-    const collectedData = {
-      transcribedText,
-      round: currentQuestionAnswer?.round,
-      question: currentQuestionAnswer?.question,
-      answer: currentQuestionAnswer?.answer
+    const text = await getNextQuestion(transcribedText);
+    if (!text) {
+      toast({ title: "Something went wrong while generating question" })
+      return
     }
 
-    socket.emit("interview-answer", collectedData);
-  }, [currentQuestionAnswer?.answer, currentQuestionAnswer?.question, currentQuestionAnswer?.round, socket])
+    const nextQUestionIndex = (currentQuestionAnswer && currentQuestionAnswer.index + 1) || 1
+    const round = selectRound(nextQUestionIndex)
 
-  const handleResetQuestion = async () => {
-    await sendAnswerForEvaluation();
+    setCurrentQuestionAnswer({ question: text, answer: "", round, index: nextQUestionIndex });
+    socket.emit("next-question", { question: text, round });
   }
 
   const handleEmotionalStateChange = (newState: string) => {
@@ -72,10 +96,11 @@ function InterviewPage() {
   };
 
   useEffect(() => {
-    if (!currentQuestionAnswer) {
+    if (!currentQuestionAnswer && candidate) {
+      getNextQuestion("")
       socket.emit("initial-setup", candidate)
     }
-  }, [candidate, currentQuestionAnswer, sendAnswerForEvaluation, socket])
+  }, [candidate, currentQuestionAnswer, getNextQuestion, socket])
 
   useEffect(() => {
 
@@ -89,7 +114,7 @@ function InterviewPage() {
     };
 
     const handleNextQuestion = ({ question, round }: { question: string, round: RoundType }) => {
-      setCurrentQuestionAnswer({ question, answer: "", round });
+      setCurrentQuestionAnswer({ question, answer: "", round, index: currentQuestionAnswer ? currentQuestionAnswer.index + 1 : 1 });
     }
 
     const handleDisconnect = () => {
@@ -116,7 +141,7 @@ function InterviewPage() {
       socket.off("disconnect", handleDisconnect);
       socket.off("connect_error", handleConnectError);
     };
-  }, [candidate, navigate, setSocketId, socket]);
+  }, [candidate, currentQuestionAnswer, navigate, setSocketId, socket]);
 
   return (
     <div className="">

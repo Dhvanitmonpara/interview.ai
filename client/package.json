@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.22.11",
+    "@google/generative-ai": "^0.21.0",
     "@hookform/resolvers": "^4.0.0",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-label": "^2.1.2",
@@ -21,7 +22,6 @@
     "@radix-ui/react-visually-hidden": "^1.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "emblor": "^1.4.7",
     "face-api.js": "^0.22.2",
     "lucide-react": "^0.474.0",
     "react": "^19.0.0",
