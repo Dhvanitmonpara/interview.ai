@@ -5,12 +5,19 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { toast } from "@/hooks/use-toast";
 import useSocket from "@/socket/useSocket";
 import useSocketStore from "@/store/socketStore";
+import { QuestionAnswerType } from "@/types/QuestionAnswer";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+const mockQuestion = {
+  question: "What is the output of console.log(\"2 + 2\")?",
+  answer: "2 + 2"
+}
 
 function InterviewPage() {
 
   const [emotionalState, setEmotionalState] = useState('undetermined');
+  const [currentQuestionAnswer, setCurrentQuestionAnswer] = useState<QuestionAnswerType | null>(mockQuestion);
 
   const socket = useSocket()
   const { setSocketId } = useSocketStore()
@@ -46,6 +53,10 @@ function InterviewPage() {
       setSocketId(socket.id || "");
     };
 
+    const handleNextQuestion = ({ question }: { question: string }) => {
+      setCurrentQuestionAnswer({ question, answer: "" });
+    }
+
     const handleDisconnect = () => {
       setSocketId("");
       toast({ title: "You have been disconnected" });
@@ -60,11 +71,13 @@ function InterviewPage() {
     };
 
     socket.on("connect", handleConnect);
+    socket.on("next-question", handleNextQuestion);
     socket.on("disconnect", handleDisconnect);
     socket.on("connect_error", handleConnectError);
 
     return () => {
       socket.off("connect", handleConnect);
+      socket.off("next-question", handleNextQuestion);
       socket.off("disconnect", handleDisconnect);
       socket.off("connect_error", handleConnectError);
     };
@@ -86,8 +99,8 @@ function InterviewPage() {
     <div className="">
       <h3>Interview Analysis</h3>
       <div className="flex space-x-2">
-        <Timer onReset={handleResetQuestion} />
-        <Button>Skip time</Button>
+        <Timer currentQuestionAnswer={currentQuestionAnswer} onReset={handleResetQuestion} />
+        <Button onClick={handleResetQuestion}>Skip time</Button>
         <Dialog>
           <DialogTrigger>
             <span className="bg-red-500 text-zinc-100 rounded-md py-3 px-4">Leave</span>
