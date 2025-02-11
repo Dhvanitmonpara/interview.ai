@@ -22,7 +22,7 @@ function InterviewPage() {
   const socket = useSocket()
   const { setSocketId } = useSocketStore()
 
-  const handleVideoTranscription = () => {
+  const handleVideoTranscription = async () => {
     try {
       // TODO: Convert video into text and return it
       return "";
@@ -37,14 +37,15 @@ function InterviewPage() {
     }
   }
 
-  const handleSendAnswerForEvaluation = () => {
-    const transcribedText = handleVideoTranscription();
+  const handleSendAnswerForEvaluation = async () => {
+    const transcribedText = await handleVideoTranscription();
 
     if (!transcribedText) {
       toast({ title: "Something went wrong while processing video" })
       return;
     }
 
+    // TODO: update this to send more data
     socket.emit("interview-answer", transcribedText);
   }
 
@@ -91,8 +92,8 @@ function InterviewPage() {
     }
   };
 
-  const handleResetQuestion = () => {
-    handleSendAnswerForEvaluation();
+  const handleResetQuestion = async () => {
+    await handleSendAnswerForEvaluation();
   }
 
   return (
