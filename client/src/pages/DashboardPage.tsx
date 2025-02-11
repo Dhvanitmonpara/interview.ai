@@ -14,9 +14,9 @@ function DashboardPage() {
     <div className="h-full w-full">
       <p className="text-white dark:text-black">dashboard</p>
       <Button onClick={sessionHandler}>Start session</Button>
-      <div>
-        <CodeEditor/>
-      </div>
+        <div className="p-4 rounded-md">
+          <CodeEditor />
+        </div>
     </div>
   )
 }

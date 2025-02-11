@@ -1,41 +1,49 @@
-import Editor, { Monaco } from '@monaco-editor/react';
 import { useRef, useState } from 'react';
+import Editor from '@monaco-editor/react';
 import LanguageSelector from '@/components/general/LanguageSelector';
+import Output from './Output';
 
+interface CodeEditorProps {
+    language: string;
+    focus: () => void;
+    getValue: () => string;
+}
 
 function CodeEditor() {
-    // Use specific type for Monaco Editor
-    const editorRef = useRef<any | null>(null);
+    const editorRef = useRef<CodeEditorProps | null>(null);
     const [value, setValue] = useState<string>('');
-    const [language, setLanguage] = useState<string>("javascript"); // Default language as lowercase
+    const [language, setLanguage] = useState<string>('javascript');
 
     const onMount = (editorValue: any) => {
         editorRef.current = editorValue;
-        editorRef.current.focus();
+        if (editorRef.current && typeof editorRef.current.focus === 'function') {
+            editorRef.current.focus();
+        }
     };
 
     function ChangeLanguage(language: string) {
-        setLanguage(language.toLowerCase()); // Ensure language is always lowercase
+        setLanguage(language.toLowerCase());
+    }
+        return (
+            <div className="flex">
+                <div>
+                    <LanguageSelector language={language} ChangeLanguage={ChangeLanguage} />
+                    <Editor
+                        height="70vh"
+                        width="600px"
+                        theme="vs-dark"
+                        value={value}
+                        onMount={onMount}
+                        onChange={(e: string | undefined) => {
+                            if (e) setValue(e);
+                        }}
+                        language={language}
+                        defaultValue="// some comment"
+                    />
+                </div>
+                <Output language={language} editorRef={editorRef} />
+            </div>
+        );
     }
 
-    return (
-        <div className=''>
-            <LanguageSelector language={language} ChangeLanguage={ChangeLanguage} />
-
-            <Editor
-                height="70vh"
-                width="100%"
-                theme='vs-dark'
-                value={value}
-                onMount={onMount}
-                onChange={(e: string | undefined) => {
-                    if (e) setValue(e);
-                }}
-                language={language}
-                defaultValue="// some comment"
-            />
-        </div>
-    );
-}
-
-export default CodeEditor;
+    export default CodeEditor

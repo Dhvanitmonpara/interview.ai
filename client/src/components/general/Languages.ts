@@ -1,8 +1,7 @@
 export const languages: { [key: string]: string } = {
-    TypeScript: "4.9",
-    Python: "3.11.3",
-    Java: "17 (LTS)",
-    JavaScript: "ES 14",
-    PHP: "8.2.0",
-    CSharp: "11",
+    typescript: "5.0.3",
+    python: "3.10.0",
+    java: "15.0.2",
+    javascript: "18.15.0",
+    php: "8.2.3",
 }
