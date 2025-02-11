@@ -38,11 +38,13 @@ io.on('connection', (socket) => {
         endTime: null,
     };
 
-    // Store the session data
-    runningInterviewSession.set(socket.id, initialInterviewData);
-
     // Notify everyone that a user has connected
     io.emit('user-connected', { socketId: socket.id });
+
+    // initial setup
+    socket.on("initial-setup", (data) => {
+        runningInterviewSession.set(socket.id, { ...initialInterviewData, ...data });
+    })
 
     // Handle incoming interview data
     socket.on("interview-data", (data) => {

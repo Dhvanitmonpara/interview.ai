@@ -1,0 +1,151 @@
+import { Button } from "@/components/ui/button"
+import { useNavigate } from "react-router-dom"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import SkillsInput from "./SkillsInput";
+import useInterviewStore from "@/store/interviewStore";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+const jobRoleSchema = z.enum([
+  "front-end",
+  "back-end",
+  "full-stack",
+  "ai-engineer",
+  "network-engineer",
+  "cloud-architect",
+  "data-analyst",
+  "python-developer",
+  "js-developer",
+  "java-developer",
+  "android-developer",
+]);
+
+const formSchema = z.object({
+  yearsOfExperience: z
+    .number()
+    .min(0, "Experience must be a positive number")
+    .max(50, "Experience cannot exceed 50 years"),
+  jobRole: jobRoleSchema,
+  skills: z.array(z.string()).nonempty("At least one skill is required"),
+});
+
+// type JobRoleType = z.infer<typeof jobRoleSchema>;
+// type AboutCandidateType = z.infer<typeof formSchema>;
+
+function SessionInfoForm() {
+
+  const { setCandidate } = useInterviewStore()
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      yearsOfExperience: 0,
+      jobRole: "front-end",
+      skills: []
+    }
+  })
+
+  const navigate = useNavigate()
+
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log(values)
+    setCandidate({
+      name: "John Doe",
+      yearsOfExperience: values.yearsOfExperience,
+      jobRole: values.jobRole,
+      skills: values.skills
+    })
+    navigate(`/interview/${Date.now()}`)
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger>
+        <span className="bg-zinc-200 text-zinc-900 rounded-md py-3 px-4">Start session</span>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Start session</DialogTitle>
+          <DialogDescription>
+            Fill the form below to start a new session
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="jobRole"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Job Role</FormLabel>
+                  <FormControl>
+                    <Select form="jobRole" value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="">
+                        <SelectValue placeholder="Theme" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {jobRoleSchema.options.map((option) => (
+                          <SelectItem key={option} value={option}>
+                            {option}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="yearsOfExperience"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Experience</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      {...form.register("yearsOfExperience", { valueAsNumber: true })}
+                      placeholder="Years of Experience"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="skills"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Skills</FormLabel>
+                  <FormControl>
+                    <SkillsInput value={field.value || []} onChange={field.onChange} />
+                  </FormControl>
+                  <FormDescription>
+                    Enter at least three skills
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit">Submit</Button>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+export default SessionInfoForm

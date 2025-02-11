@@ -1,4 +1,4 @@
-import { QuestionAnswerType } from "@/types/QuestionAnswer";
+import { QuestionAnswerType } from "@/types/InterviewData";
 import { useState, useEffect, useRef } from "react";
 
 function Timer({ onReset, currentQuestionAnswer }: { onReset: () => void, currentQuestionAnswer: QuestionAnswerType | null }) {

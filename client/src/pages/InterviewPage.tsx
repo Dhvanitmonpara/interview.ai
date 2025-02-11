@@ -4,20 +4,23 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import useSocket from "@/socket/useSocket";
+import useInterviewStore from "@/store/interviewStore";
 import useSocketStore from "@/store/socketStore";
-import { QuestionAnswerType } from "@/types/QuestionAnswer";
-import { useEffect, useState } from "react";
+import { QuestionAnswerType, RoundType } from "@/types/InterviewData";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const mockQuestion = {
   question: "What is the output of console.log(\"2 + 2\")?",
-  answer: "2 + 2"
+  answer: "2 + 2",
+  round: "aptitude" as RoundType
 }
 
 function InterviewPage() {
 
   const socket = useSocket()
   const { setSocketId } = useSocketStore()
+  const { candidate } = useInterviewStore()
 
   const [emotionalState, setEmotionalState] = useState('undetermined');
   const [currentQuestionAnswer, setCurrentQuestionAnswer] = useState<QuestionAnswerType | null>(mockQuestion);
@@ -39,7 +42,7 @@ function InterviewPage() {
     }
   }
 
-  const sendAnswerForEvaluation = async () => {
+  const sendAnswerForEvaluation = useCallback(async () => {
     const transcribedText = await handleVideoTranscription();
 
     if (!transcribedText) {
@@ -48,8 +51,15 @@ function InterviewPage() {
     }
 
     // TODO: update this to send more data
-    socket.emit("interview-answer", transcribedText);
-  }
+    const collectedData = {
+      transcribedText,
+      round: currentQuestionAnswer?.round,
+      question: currentQuestionAnswer?.question,
+      answer: currentQuestionAnswer?.answer
+    }
+
+    socket.emit("interview-answer", collectedData);
+  }, [currentQuestionAnswer?.answer, currentQuestionAnswer?.question, currentQuestionAnswer?.round, socket])
 
   const handleResetQuestion = async () => {
     await sendAnswerForEvaluation();
@@ -62,12 +72,24 @@ function InterviewPage() {
   };
 
   useEffect(() => {
+    if (!currentQuestionAnswer) {
+      socket.emit("initial-setup", candidate)
+    }
+  }, [candidate, currentQuestionAnswer, sendAnswerForEvaluation, socket])
+
+  useEffect(() => {
+
+    if (!candidate) {
+      navigate("/dashboard")
+      return;
+    }
+
     const handleConnect = () => {
       setSocketId(socket.id || "");
     };
 
-    const handleNextQuestion = ({ question }: { question: string }) => {
-      setCurrentQuestionAnswer({ question, answer: "" });
+    const handleNextQuestion = ({ question, round }: { question: string, round: RoundType }) => {
+      setCurrentQuestionAnswer({ question, answer: "", round });
     }
 
     const handleDisconnect = () => {
@@ -94,7 +116,7 @@ function InterviewPage() {
       socket.off("disconnect", handleDisconnect);
       socket.off("connect_error", handleConnectError);
     };
-  }, [setSocketId, socket]);
+  }, [candidate, navigate, setSocketId, socket]);
 
   return (
     <div className="">
