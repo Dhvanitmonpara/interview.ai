@@ -13,6 +13,7 @@ import DashboardPage from './pages/DashboardPage'
 import RootLayout from './layouts/RootLayout'
 import FeedbackPage from './pages/FeedbackPage'
 import InterviewPage from './pages/InterviewPage'
+import InterviewLayout from './layouts/InterviewLayout'
 
 // Import your Publishable Key
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
@@ -45,7 +46,7 @@ const router = createBrowserRouter([
       },
       {
         path: "interview",
-        element: <AppLayout />,
+        element: <InterviewLayout />,
         children: [
           {
             path: ":id",
