@@ -146,7 +146,7 @@ function SessionInfoForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
+            <Button className="w-full" type="submit">Submit</Button>
           </form>
         </Form>
       </DialogContent>

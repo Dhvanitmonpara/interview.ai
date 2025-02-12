@@ -12,13 +12,6 @@ import { generateNextQuestion } from "@/utils/handleQuestionAnswer";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const mockQuestion = {
-  question: "What is the output of console.log(\"2 + 2\")?",
-  answer: "2 + 2",
-  round: "aptitude" as RoundType,
-  index: 1
-}
-
 const selectRound = (questionIndex: number): RoundType => {
   if (questionIndex >= 0 && questionIndex <= 2) return "aptitude"
   if (questionIndex >= 3 && questionIndex <= 5) return "behavioral"
@@ -33,7 +26,7 @@ function InterviewPage() {
   const { candidate } = useInterviewStore()
 
   const [emotionalState, setEmotionalState] = useState('undetermined');
-  const [currentQuestionAnswer, setCurrentQuestionAnswer] = useState<QuestionAnswerType | null>(mockQuestion);
+  const [currentQuestionAnswer, setCurrentQuestionAnswer] = useState<QuestionAnswerType | null>(null);
 
   const navigate = useNavigate()
 
@@ -97,10 +90,18 @@ function InterviewPage() {
   };
 
   useEffect(() => {
-    if (!currentQuestionAnswer && candidate) {
-      getNextQuestion("")
-      socket.emit("initial-setup", candidate)
+    const initialSetup = async () => {
+      if (!currentQuestionAnswer && candidate) {
+        const text = await getNextQuestion("")
+        if (!text) {
+          return
+        }
+        setCurrentQuestionAnswer({ question: text, answer: "", round: "aptitude", index: 1 })
+        socket.emit("initial-setup", candidate)
+      }
     }
+
+    initialSetup()
   }, [candidate, currentQuestionAnswer, getNextQuestion, socket])
 
   useEffect(() => {
@@ -181,8 +182,9 @@ function InterviewPage() {
         <div className="col-span-2">
           {/* webcam */}
           <Webcam onEmotionalStateChange={handleEmotionalStateChange} />
-          <div className="h-full w-full bg-red-400">
+          <div className="h-full w-full bg-red-500">
             {/* avatar */}
+            <p className="p-4">{currentQuestionAnswer?.question}</p>
           </div>
           {/* <div className="mt-4 px-4 text-xl">
             Current detected state: <strong>{emotionalState}</strong>

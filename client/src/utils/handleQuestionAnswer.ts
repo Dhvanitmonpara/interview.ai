@@ -55,7 +55,7 @@ The candidate's details:
 - **(Advanced, AI Engineer, ML, 7 Years Exp)**: "What are the trade-offs between using **LSTMs** vs. **Transformers** for NLP tasks?"  
 - **(System Design, Full-Stack, 6 Years Exp)**: "Design a **scalable URL shortener** like Bitly. What technologies and database choices would you make?"  
 
-Generate a question accordingly.
+Generate a question accordingly in string format (Don't generate extra text).
   `;
 };
 
