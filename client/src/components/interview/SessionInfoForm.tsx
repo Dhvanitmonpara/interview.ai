@@ -70,16 +70,15 @@ function SessionInfoForm() {
 
   return (
     <Dialog>
-      <DialogTrigger className="">
+      <div className="flex flex-wrap justify-center items-center gap-2 max-w-3xl mx-auto">
         {jobRoleSchema.options.map((option) => (
-          <span key={option} onClick={() => {
+          <DialogTrigger key={option} onClick={() => {
             form.setValue("jobRole", option);
-          }}
-            className="bg-zinc-800 dark:bg-zinc-200 text-zinc-100 dark:text-zinc-900 rounded-md py-3 px-4">
+          }} className="bg-zinc-800 dark:bg-zinc-200 text-zinc-100 dark:text-zinc-900 rounded-md py-3 px-4">
             {option}
-          </span>
+          </DialogTrigger>
         ))}
-      </DialogTrigger>
+      </div>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Start session</DialogTitle>
