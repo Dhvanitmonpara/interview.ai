@@ -28,7 +28,6 @@ app.options('*', cors());
 const runningInterviewSession = new Map();
 
 io.on('connection', (socket) => {
-
     // Initial interview data for the session
     const initialInterviewData = {
         userId: socket.id, // Using socket ID for tracking
@@ -50,6 +49,7 @@ io.on('connection', (socket) => {
     socket.on("face-expression-data", ({ expressionState, timeStamp, questionAnswerIndex }) => {
         if (runningInterviewSession.has(socket.id)) {
             runningInterviewSession.get(socket.id)[questionAnswerIndex].faceExpressions.push(expressionState, timeStamp)
+            console.log(runningInterviewSession.get(socket.id))
         }
     })
 
@@ -85,4 +85,4 @@ app.use("/api/v1/sessions", sessionRouter)
 
 // http://localhost:8000/api/v1/users/register
 
-export { app, runningInterviewSession }
+export { app, server, runningInterviewSession }
