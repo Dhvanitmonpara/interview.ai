@@ -53,9 +53,7 @@ function Timer({ onReset, currentQuestionAnswer }: { onReset: () => void, curren
   }, [timer, onReset]);
 
   return (
-    <div>
-      <h1>Time Left: {timer < 10 ? `0${timer}` : timer}s</h1>
-    </div>
+    <span className="text-zinc-800 dark:text-zinc-200 font-semibold px-4 py-2 bg-zinc-200/80 dark:bg-zinc-800/80 rounded-md text-center">{timer < 10 ? `0${timer}` : timer}s</span>
   );
 }
 

@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface OutputProps {
     language: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     editorRef: React.RefObject<any>;
 }
 
@@ -23,7 +24,7 @@ const Output: React.FC<OutputProps> = ({ language, editorRef }) => {
             setIsLoading(true)
             const { run: result } = await ExecuteCode(language, sourceCode);
             setOutput(result.output);
-            result.stderr ? setIsError(true) : setIsError(false);
+            setIsError(result.stderr ? true : false);
         } catch (error) {
             console.error('Error executing code:', error ? error : error);
             toast({
@@ -36,11 +37,11 @@ const Output: React.FC<OutputProps> = ({ language, editorRef }) => {
     };
 
     return (
-        <div className='h-[400px] w-full bg-gray-200'>
+        <div className='h-[300px] absolute bottom-0 left-0 w-full bg-neutral-800 border-t-2 border-neutral-700 text-zinc-100'>
             <Button onClick={runCode} >
                 {isLoading ? <Loader className='animate-spin' /> : "Run"}
             </Button>
-            <div className='dark:text-black p-5'>
+            <div className='p-5'>
                 {output ? output : "Click 'Run Code' to see the output"}
                 {isError ? isError : null}
             </div>

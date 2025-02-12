@@ -14,7 +14,8 @@ function CodeEditor() {
     const [value, setValue] = useState<string>('');
     const [language, setLanguage] = useState<string>('javascript');
 
-    const onMount = (editorValue: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const onMountHandler = (editorValue: any) => {
         editorRef.current = editorValue;
         if (editorRef.current && typeof editorRef.current.focus === 'function') {
             editorRef.current.focus();
@@ -24,26 +25,24 @@ function CodeEditor() {
     function ChangeLanguage(language: string) {
         setLanguage(language.toLowerCase());
     }
-        return (
-            <div className="flex">
-                <div>
-                    <LanguageSelector language={language} ChangeLanguage={ChangeLanguage} />
-                    <Editor
-                        height="70vh"
-                        width="600px"
-                        theme="vs-dark"
-                        value={value}
-                        onMount={onMount}
-                        onChange={(e: string | undefined) => {
-                            if (e) setValue(e);
-                        }}
-                        language={language}
-                        defaultValue="// some comment"
-                    />
-                </div>
-                <Output language={language} editorRef={editorRef} />
-            </div>
-        );
-    }
+    return (
+        <div className="col-span-5 max-h-[90vh] relative">
+            <LanguageSelector language={language} ChangeLanguage={ChangeLanguage} />
+            <Editor
+                height="100%"
+                width="100%"
+                theme="vs-dark"
+                value={value}
+                onMount={onMountHandler}
+                onChange={(e: string | undefined) => {
+                    if (e) setValue(e);
+                }}
+                language={language}
+                defaultValue="// Start coding here..."
+            />
+            <Output language={language} editorRef={editorRef} />
+        </div>
+    );
+}
 
-    export default CodeEditor
+export default CodeEditor
