@@ -119,7 +119,12 @@ function SessionInfoForm() {
                 <FormItem>
                   <FormLabel>Experience</FormLabel>
                   <FormControl>
-                    <Input {...field} type="number" placeholder="Years of Experience" />
+                    <Input
+                      {...field}
+                      type="number"
+                      placeholder="Years of Experience"
+                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
