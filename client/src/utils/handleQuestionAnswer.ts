@@ -18,12 +18,14 @@ const getBasePromptForNextQuestion = ({
   jobRole,
   skills,
   round,
+  timeLimit,
   previousAnswer,
 }: {
   yearsOfExperience: number;
   candidateName: string;
   jobRole: string;
   round: RoundType;
+  timeLimit: number;
   skills: string[];
   previousAnswer: string;
 }) => {
@@ -36,6 +38,7 @@ The candidate's details:
 - **Job Role**: ${jobRole}  
 - **Skills**: ${skills.toString()}  
 - **Current Round**: ${round} (e.g., Screening, Technical, System Design, Behavioral)  
+- **Time Limit**: ${timeLimit} (in seconds)
 - **Previous Answer**: ${previousAnswer} (If any)
 
 ### **Instructions:**  
@@ -65,6 +68,7 @@ export async function generateNextQuestion(candidateDetails: {
   jobRole: string;
   skills: string[];
   round: RoundType;
+  timeLimit: number;
   previousAnswer: string;
 }): Promise<string | null> {
   try {

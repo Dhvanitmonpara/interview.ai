@@ -7,17 +7,10 @@ import { toast } from "@/hooks/use-toast";
 import useSocket from "@/socket/useSocket";
 import useInterviewStore from "@/store/interviewStore";
 import useSocketStore from "@/store/socketStore";
-import { RoundType } from "@/types/InterviewData";
 import { generateNextQuestion } from "@/utils/handleQuestionAnswer";
+import selectRoundAndTimeLimit from "@/utils/selectRoundAndTimeLimit";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-const selectRound = (questionIndex: number): RoundType => {
-  if (questionIndex >= 0 && questionIndex <= 2) return "aptitude"
-  if (questionIndex >= 3 && questionIndex <= 5) return "behavioral"
-  if (questionIndex >= 6 && questionIndex <= 8) return "technical"
-  return "system-design"
-}
 
 function InterviewPage() {
 
@@ -49,12 +42,14 @@ function InterviewPage() {
   // helper function for generating next question using gemini API
   const getNextQuestion = useCallback(async (transcribedText: string) => {
     if (!candidate) return
+    const roundAndTimeLimit = selectRoundAndTimeLimit(currentQuestionIndex + 1)
     const data = {
       yearsOfExperience: candidate.yearsOfExperience,
       candidateName: candidate.name,
       jobRole: candidate.jobRole,
       skills: candidate.skills,
-      round: selectRound(currentQuestionIndex + 1),
+      round: roundAndTimeLimit.round,
+      timeLimit: roundAndTimeLimit.timeLimit,
       previousAnswer: transcribedText
     }
     const text = await generateNextQuestion(data)
@@ -67,7 +62,7 @@ function InterviewPage() {
 
   // main function to reset the question
   const handleResetQuestion = async () => {
-    
+
     if (!questionAnswerSets) return
 
     const transcribedText = await handleVideoTranscription();
@@ -78,11 +73,14 @@ function InterviewPage() {
 
     updateAnswer(transcribedText, currentQuestionIndex)
 
+    const previousRoundAndTimeLimit = selectRoundAndTimeLimit(currentQuestionIndex)
+
     // send previous question data to the backend
-    socket.emit("previous-question-data", { 
+    socket.emit("previous-question-data", {
       question: questionAnswerSets[currentQuestionIndex].question,
-      answer: transcribedText, 
-      round: selectRound(currentQuestionIndex)
+      answer: transcribedText,
+      timeLimit: previousRoundAndTimeLimit.timeLimit,
+      round: previousRoundAndTimeLimit.round
       // TODO: add analytics data too
     });
 
@@ -92,10 +90,10 @@ function InterviewPage() {
       return
     }
 
-    const round = selectRound(currentQuestionIndex + 1)
+    const roundAndTimeLimit = selectRoundAndTimeLimit(currentQuestionIndex + 1)
 
     // update question states
-    addQuestionAnswerSet({ question: text, answer: "", round });
+    addQuestionAnswerSet({ question: text, answer: "", round: roundAndTimeLimit.round, timeLimit: roundAndTimeLimit.timeLimit });
     setCurrentQuestionIndex(prev => prev + 1)
   }
 
@@ -113,7 +111,7 @@ function InterviewPage() {
         if (!text) {
           return
         }
-        addQuestionAnswerSet({ question: text, answer: "", round: "aptitude" })
+        addQuestionAnswerSet({ question: text, answer: "", round: "aptitude", timeLimit: 60 });
         socket.emit("initial-setup", candidate)
       }
     }
