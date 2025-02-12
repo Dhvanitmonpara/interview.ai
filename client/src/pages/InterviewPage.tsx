@@ -1,3 +1,4 @@
+import CodeEditor from "@/components/general/CodeEditor";
 import Timer from "@/components/interview/Timer";
 import Webcam from "@/components/interview/Webcam";
 import { Button } from "@/components/ui/button";
@@ -172,6 +173,10 @@ function InterviewPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+      </div>
+
+      <div className="p-4 rounded-md">
+        <CodeEditor />
       </div>
 
       {/* webcam */}
