@@ -70,8 +70,15 @@ function SessionInfoForm() {
 
   return (
     <Dialog>
-      <DialogTrigger>
-        <span className="bg-zinc-200 text-zinc-900 rounded-md py-3 px-4">Start session</span>
+      <DialogTrigger className="">
+        {jobRoleSchema.options.map((option) => (
+          <span key={option} onClick={() => {
+            form.setValue("jobRole", option);
+          }}
+            className="bg-zinc-800 dark:bg-zinc-200 text-zinc-100 dark:text-zinc-900 rounded-md py-3 px-4">
+            {option}
+          </span>
+        ))}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -113,12 +120,7 @@ function SessionInfoForm() {
                 <FormItem>
                   <FormLabel>Experience</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      type="number"
-                      {...form.register("yearsOfExperience", { valueAsNumber: true })}
-                      placeholder="Years of Experience"
-                    />
+                    <Input {...field} type="number" placeholder="Years of Experience" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
