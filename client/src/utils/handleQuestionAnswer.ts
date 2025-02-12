@@ -12,6 +12,16 @@ if (!apiKey) {
 const genAI = new GoogleGenerativeAI(apiKey);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
+type candidateDetailsType = {
+  yearsOfExperience: number;
+  candidateName: string | null;
+  jobRole: string;
+  skills: string[];
+  round: RoundType;
+  timeLimit: number;
+  previousAnswer: string;
+};
+
 const getBasePromptForNextQuestion = ({
   yearsOfExperience,
   candidateName,
@@ -20,20 +30,12 @@ const getBasePromptForNextQuestion = ({
   round,
   timeLimit,
   previousAnswer,
-}: {
-  yearsOfExperience: number;
-  candidateName: string;
-  jobRole: string;
-  round: RoundType;
-  timeLimit: number;
-  skills: string[];
-  previousAnswer: string;
-}) => {
+}: candidateDetailsType) => {
   return `
 You are an AI-powered interviewer conducting a professional coding and technical interview.  
 
 The candidate's details:  
-- **Name**: ${candidateName}  
+${candidateName && `- **Name**: ${candidateName}`}
 - **Years of Experience**: ${yearsOfExperience}  
 - **Job Role**: ${jobRole}  
 - **Skills**: ${skills.toString()}  
@@ -53,24 +55,18 @@ The candidate's details:
 6. If the round is **Behavioral**, ask situational or STAR-based questions.  
 
 ### **Example Outputs:**  
-- **(Beginner, Front-end, React, 1 Year Exp)**: "Can you explain the difference between **React state** and **props** with an example?"  
-- **(Intermediate, Back-end, Node.js, 4 Years Exp)**: "How would you design a **REST API for a social media platform**? What database structure would you use?"  
-- **(Advanced, AI Engineer, ML, 7 Years Exp)**: "What are the trade-offs between using **LSTMs** vs. **Transformers** for NLP tasks?"  
-- **(System Design, Full-Stack, 6 Years Exp)**: "Design a **scalable URL shortener** like Bitly. What technologies and database choices would you make?"  
+- Can you explain the difference between **React state** and **props** with an example?  
+- How would you design a **REST API for a social media platform**? What database structure would you use?  
+- What are the trade-offs between using **LSTMs** vs. **Transformers** for NLP tasks?  
+- Design a **scalable URL shortener** like Bitly. What technologies and database choices would you make? 
 
-Generate a question accordingly in string format (Don't generate extra text).
+Generate a question accordingly.
   `;
 };
 
-export async function generateNextQuestion(candidateDetails: {
-  yearsOfExperience: number;
-  candidateName: string;
-  jobRole: string;
-  skills: string[];
-  round: RoundType;
-  timeLimit: number;
-  previousAnswer: string;
-}): Promise<string | null> {
+export async function generateNextQuestion(
+  candidateDetails: candidateDetailsType
+): Promise<string | null> {
   try {
     const basePrompt = getBasePromptForNextQuestion(candidateDetails);
     const result = await model.generateContent(basePrompt + prompt);

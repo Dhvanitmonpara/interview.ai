@@ -23,10 +23,15 @@ export const jobRoleSchema = z.enum([
   "android-developer",
 ]);
 
+export type FaceExpressionType = {
+  expressionState: string;
+  timeStamp: number;
+}
+
 export type JobRoleType = z.infer<typeof jobRoleSchema>;
 
 export type AboutCandidateType = {
-  name: string;
+  name: string | null;
   yearsOfExperience: number;
   jobRole: JobRoleType;
   skills: string[];

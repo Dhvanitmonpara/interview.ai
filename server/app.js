@@ -28,7 +28,6 @@ app.options('*', cors());
 const runningInterviewSession = new Map();
 
 io.on('connection', (socket) => {
-    console.log(`User connected: ${socket.id}`);
 
     // Initial interview data for the session
     const initialInterviewData = {
@@ -36,6 +35,7 @@ io.on('connection', (socket) => {
         responses: [],
         startTime: Date.now(),
         endTime: null,
+        faceExpressions: []
     };
 
     // Notify everyone that a user has connected
@@ -46,31 +46,34 @@ io.on('connection', (socket) => {
         runningInterviewSession.set(socket.id, { ...initialInterviewData, ...data });
     })
 
-    // Handle incoming interview data
-    socket.on("interview-data", (data) => {
+    // face expression data
+    socket.on("face-expression-data", ({ expressionState, timeStamp, questionAnswerIndex }) => {
         if (runningInterviewSession.has(socket.id)) {
-            runningInterviewSession.get(socket.id).responses.push(data);
-            console.log(`Data received from ${socket.id}:`, data);
+            runningInterviewSession.get(socket.id)[questionAnswerIndex].faceExpressions.push(expressionState, timeStamp)
         }
-    });
+    })
+
+    // previous question data
+    socket.on("previous-question-data", (data) => {
+        if (runningInterviewSession.has(socket.id)) {
+            runningInterviewSession.get(socket.id).push(data)
+        }
+    })
 
     // Handle interview completion
     socket.on("interview-complete", () => {
         if (runningInterviewSession.has(socket.id)) {
             runningInterviewSession.get(socket.id).endTime = Date.now();
-            console.log(`Interview completed for ${socket.id}`);
+
+            // TODO: process analytics data
+
+            socket.emit("interview-analytics", true)
         }
     });
 
     // Handle disconnection
     socket.on('disconnect', () => {
-        console.log(`User disconnected: ${socket.id}`);
-
-        // Remove session data
         runningInterviewSession.delete(socket.id);
-
-        // Notify all clients
-        io.emit('user-disconnected', { socketId: socket.id });
     });
 });
 

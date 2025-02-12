@@ -8,6 +8,7 @@ import {
   draw,
   detectSingleFace,
 } from 'face-api.js';
+import useSocket from "@/socket/useSocket";
 import { toast } from '@/hooks/use-toast';
 import { ExpressionScores } from '@/types/ExpressionScores';
 import { useLocation } from 'react-router-dom';
@@ -96,13 +97,10 @@ function evaluateEmotionalState(expressions: ExpressionScores): string {
 }
 
 // component
-function Webcam({
-  onEmotionalStateChange,
-}: {
-  onEmotionalStateChange: (emotionalState: string) => void;
-}) {
+function Webcam({ questionAnswerIndex }: { questionAnswerIndex: number }) {
 
   const location = useLocation()
+  const socket = useSocket()
 
   const MODEL_URL = '/models'; // Path where models are stored
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -165,7 +163,7 @@ function Webcam({
           if (detection) {
             const { expressions } = detection;
             const newEmotionalState = evaluateEmotionalState(expressions);
-            onEmotionalStateChange(newEmotionalState);
+            socket.emit("face-expression-data", { expressionState: newEmotionalState, timeStamp: Date.now(), questionAnswerIndex })
           } else {
             console.warn("No face detected 😢");
           }
@@ -233,6 +231,7 @@ function Webcam({
         console.warn("Error disposing models:", error);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   return (

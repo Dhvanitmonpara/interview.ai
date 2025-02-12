@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { jobRoleSchema } from "@/types/InterviewData";
+import { useUser } from "@clerk/clerk-react";
 
 const formSchema = z.object({
   yearsOfExperience: z
@@ -40,11 +41,11 @@ function SessionInfoForm() {
   })
 
   const navigate = useNavigate()
+  const userName = useUser().user?.firstName
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values)
     setCandidate({
-      name: "John Doe",
+      name: userName || null,
       yearsOfExperience: values.yearsOfExperience,
       jobRole: values.jobRole,
       skills: values.skills

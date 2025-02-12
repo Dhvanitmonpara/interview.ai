@@ -18,7 +18,6 @@ function InterviewPage() {
   const { setSocketId } = useSocketStore()
   const { candidate, questionAnswerSets, addQuestionAnswerSet, updateAnswer } = useInterviewStore()
 
-  const [emotionalState, setEmotionalState] = useState('undetermined');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const navigate = useNavigate()
@@ -80,8 +79,8 @@ function InterviewPage() {
       question: questionAnswerSets[currentQuestionIndex].question,
       answer: transcribedText,
       timeLimit: previousRoundAndTimeLimit.timeLimit,
-      round: previousRoundAndTimeLimit.round
-      // TODO: add analytics data too
+      round: previousRoundAndTimeLimit.round,
+      // TODO: add more analytics data
     });
 
     const text = await getNextQuestion(transcribedText);
@@ -96,12 +95,6 @@ function InterviewPage() {
     addQuestionAnswerSet({ question: text, answer: "", round: roundAndTimeLimit.round, timeLimit: roundAndTimeLimit.timeLimit });
     setCurrentQuestionIndex(prev => prev + 1)
   }
-
-  const handleEmotionalStateChange = (newState: string) => {
-    if (newState !== emotionalState) {
-      setEmotionalState(newState);
-    }
-  };
 
   // useEffect for initial setup
   useEffect(() => {
@@ -130,6 +123,11 @@ function InterviewPage() {
       setSocketId(socket.id || "");
     };
 
+    const handleInterviewAnalyticsData = () => {
+      // TODO: redirect user to analytics page and show it
+      // TODO: call API that will store all collected data in database
+    }
+
     const handleDisconnect = () => {
       setSocketId("");
       toast({ title: "You have been disconnected" });
@@ -144,11 +142,13 @@ function InterviewPage() {
     };
 
     socket.on("connect", handleConnect);
+    socket.on("interview-analytics", handleInterviewAnalyticsData );
     socket.on("disconnect", handleDisconnect);
     socket.on("connect_error", handleConnectError);
-
+    
     return () => {
       socket.off("connect", handleConnect);
+      socket.off("interview-analytics", handleInterviewAnalyticsData );
       socket.off("disconnect", handleDisconnect);
       socket.off("connect_error", handleConnectError);
     };
@@ -190,7 +190,7 @@ function InterviewPage() {
         <CodeEditor />
         <div className="col-span-2">
           {/* webcam */}
-          <Webcam onEmotionalStateChange={handleEmotionalStateChange} />
+          <Webcam questionAnswerIndex={currentQuestionIndex} />
           <div className="h-full w-full bg-red-500">
             {/* avatar */}
             <p className="p-4">{questionAnswerSets && questionAnswerSets[currentQuestionIndex]?.question || "No question found"}</p>
