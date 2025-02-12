@@ -23,7 +23,7 @@ function InterviewPage() {
 
   const socket = useSocket()
   const { setSocketId } = useSocketStore()
-  const { candidate, questionAnswerSets, addQuestionAnswerSet } = useInterviewStore()
+  const { candidate, questionAnswerSets, addQuestionAnswerSet, updateAnswer } = useInterviewStore()
 
   const [emotionalState, setEmotionalState] = useState('undetermined');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -34,7 +34,7 @@ function InterviewPage() {
   const handleVideoTranscription = async () => {
     try {
       // TODO: Convert video into text and return it
-      return "";
+      return "example text cause of typescript";
     } catch (error) {
       if (error instanceof Error) {
         toast({ title: error.message })
@@ -67,7 +67,7 @@ function InterviewPage() {
 
   // main function to reset the question
   const handleResetQuestion = async () => {
-
+    
     if (!questionAnswerSets) return
 
     const transcribedText = await handleVideoTranscription();
@@ -75,6 +75,16 @@ function InterviewPage() {
       toast({ title: "Something went wrong while processing video" })
       return;
     }
+
+    updateAnswer(transcribedText, currentQuestionIndex)
+
+    // send previous question data to the backend
+    socket.emit("previous-question-data", { 
+      question: questionAnswerSets[currentQuestionIndex].question,
+      answer: transcribedText, 
+      round: selectRound(currentQuestionIndex)
+      // TODO: add analytics data too
+    });
 
     const text = await getNextQuestion(transcribedText);
     if (!text) {
@@ -84,9 +94,9 @@ function InterviewPage() {
 
     const round = selectRound(currentQuestionIndex + 1)
 
+    // update question states
     addQuestionAnswerSet({ question: text, answer: "", round });
     setCurrentQuestionIndex(prev => prev + 1)
-    socket.emit("next-question", { question: text, round });
   }
 
   const handleEmotionalStateChange = (newState: string) => {
@@ -122,10 +132,6 @@ function InterviewPage() {
       setSocketId(socket.id || "");
     };
 
-    const handleNextQuestion = () => {
-      // 
-    }
-
     const handleDisconnect = () => {
       setSocketId("");
       toast({ title: "You have been disconnected" });
@@ -140,13 +146,11 @@ function InterviewPage() {
     };
 
     socket.on("connect", handleConnect);
-    socket.on("next-question", handleNextQuestion);
     socket.on("disconnect", handleDisconnect);
     socket.on("connect_error", handleConnectError);
 
     return () => {
       socket.off("connect", handleConnect);
-      socket.off("next-question", handleNextQuestion);
       socket.off("disconnect", handleDisconnect);
       socket.off("connect_error", handleConnectError);
     };
