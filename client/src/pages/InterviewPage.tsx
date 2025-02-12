@@ -7,7 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import useSocket from "@/socket/useSocket";
 import useInterviewStore from "@/store/interviewStore";
 import useSocketStore from "@/store/socketStore";
-import { QuestionAnswerType, RoundType } from "@/types/InterviewData";
+import { RoundType } from "@/types/InterviewData";
 import { generateNextQuestion } from "@/utils/handleQuestionAnswer";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,13 +23,14 @@ function InterviewPage() {
 
   const socket = useSocket()
   const { setSocketId } = useSocketStore()
-  const { candidate } = useInterviewStore()
+  const { candidate, questionAnswerSets, addQuestionAnswerSet } = useInterviewStore()
 
   const [emotionalState, setEmotionalState] = useState('undetermined');
-  const [currentQuestionAnswer, setCurrentQuestionAnswer] = useState<QuestionAnswerType | null>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const navigate = useNavigate()
 
+  // helper function for transcribing video into text
   const handleVideoTranscription = async () => {
     try {
       // TODO: Convert video into text and return it
@@ -45,6 +46,7 @@ function InterviewPage() {
     }
   }
 
+  // helper function for generating next question using gemini API
   const getNextQuestion = useCallback(async (transcribedText: string) => {
     if (!candidate) return
     const data = {
@@ -52,7 +54,7 @@ function InterviewPage() {
       candidateName: candidate.name,
       jobRole: candidate.jobRole,
       skills: candidate.skills,
-      round: "screening" as RoundType,
+      round: selectRound(currentQuestionIndex + 1),
       previousAnswer: transcribedText
     }
     const text = await generateNextQuestion(data)
@@ -61,9 +63,13 @@ function InterviewPage() {
       return
     }
     return text
-  }, [candidate])
+  }, [candidate, currentQuestionIndex])
 
+  // main function to reset the question
   const handleResetQuestion = async () => {
+
+    if (!questionAnswerSets) return
+
     const transcribedText = await handleVideoTranscription();
     if (!transcribedText) {
       toast({ title: "Something went wrong while processing video" })
@@ -76,10 +82,10 @@ function InterviewPage() {
       return
     }
 
-    const nextQUestionIndex = (currentQuestionAnswer && currentQuestionAnswer.index + 1) || 1
-    const round = selectRound(nextQUestionIndex)
+    const round = selectRound(currentQuestionIndex + 1)
 
-    setCurrentQuestionAnswer({ question: text, answer: "", round, index: nextQUestionIndex });
+    addQuestionAnswerSet({ question: text, answer: "", round });
+    setCurrentQuestionIndex(prev => prev + 1)
     socket.emit("next-question", { question: text, round });
   }
 
@@ -89,21 +95,22 @@ function InterviewPage() {
     }
   };
 
+  // useEffect for initial setup
   useEffect(() => {
     const initialSetup = async () => {
-      if (!currentQuestionAnswer && candidate) {
+      if (!questionAnswerSets && candidate) {
         const text = await getNextQuestion("")
         if (!text) {
           return
         }
-        setCurrentQuestionAnswer({ question: text, answer: "", round: "aptitude", index: 1 })
+        addQuestionAnswerSet({ question: text, answer: "", round: "aptitude" })
         socket.emit("initial-setup", candidate)
       }
     }
-
     initialSetup()
-  }, [candidate, currentQuestionAnswer, getNextQuestion, socket])
+  }, [addQuestionAnswerSet, candidate, getNextQuestion, questionAnswerSets, socket])
 
+  // socket event handlers
   useEffect(() => {
 
     if (!candidate) {
@@ -115,8 +122,8 @@ function InterviewPage() {
       setSocketId(socket.id || "");
     };
 
-    const handleNextQuestion = ({ question, round }: { question: string, round: RoundType }) => {
-      setCurrentQuestionAnswer({ question, answer: "", round, index: currentQuestionAnswer ? currentQuestionAnswer.index + 1 : 1 });
+    const handleNextQuestion = () => {
+      // 
     }
 
     const handleDisconnect = () => {
@@ -143,7 +150,7 @@ function InterviewPage() {
       socket.off("disconnect", handleDisconnect);
       socket.off("connect_error", handleConnectError);
     };
-  }, [candidate, currentQuestionAnswer, navigate, setSocketId, socket]);
+  }, [candidate, currentQuestionIndex, navigate, setSocketId, socket]);
 
   return (
     <div className="">
@@ -151,7 +158,7 @@ function InterviewPage() {
       <div className="flex items-center justify-between border-b-2 border-zinc-300 dark:border-zinc-700 px-24 h-16">
         <h3>Interview Analysis</h3>
         <div className="flex space-x-2 items-center">
-          <Timer currentQuestionAnswer={currentQuestionAnswer} onReset={handleResetQuestion} />
+          <Timer currentQuestionIndex={currentQuestionIndex} onReset={handleResetQuestion} />
           <Button variant="secondary" onClick={handleResetQuestion}>Skip time</Button>
           <Dialog>
             <DialogTrigger>
@@ -184,7 +191,7 @@ function InterviewPage() {
           <Webcam onEmotionalStateChange={handleEmotionalStateChange} />
           <div className="h-full w-full bg-red-500">
             {/* avatar */}
-            <p className="p-4">{currentQuestionAnswer?.question}</p>
+            <p className="p-4">{questionAnswerSets && questionAnswerSets[currentQuestionIndex]?.question || "No question found"}</p>
           </div>
           {/* <div className="mt-4 px-4 text-xl">
             Current detected state: <strong>{emotionalState}</strong>

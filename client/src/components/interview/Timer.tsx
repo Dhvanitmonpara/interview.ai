@@ -1,7 +1,6 @@
-import { QuestionAnswerType } from "@/types/InterviewData";
 import { useState, useEffect, useRef } from "react";
 
-function Timer({ onReset, currentQuestionAnswer }: { onReset: () => void, currentQuestionAnswer: QuestionAnswerType | null }) {
+function Timer({ onReset, currentQuestionIndex }: { onReset: () => void, currentQuestionIndex: number }) {
   const [timer, setTimer] = useState(60);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -29,21 +28,8 @@ function Timer({ onReset, currentQuestionAnswer }: { onReset: () => void, curren
 
   // When the currentQuestionAnswer changes, restart the timer.
   useEffect(() => {
-    if (currentQuestionAnswer) {
-      startTimer();
-    } else {
-      // Optionally, if there's no current question, clear the timer.
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    }
-    // Cleanup on unmount or if currentQuestionAnswer changes again:
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [currentQuestionAnswer]);
+    startTimer();
+  }, [currentQuestionIndex]);
 
   // Trigger the reset callback when the timer hits 0.
   useEffect(() => {

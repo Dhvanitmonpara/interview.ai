@@ -4,7 +4,6 @@ export type QuestionAnswerType = {
   question: string;
   answer: string | string[] | { code: string; language: string };
   round: RoundType;
-  index: number
 };
 
 export type JobRoleType =
