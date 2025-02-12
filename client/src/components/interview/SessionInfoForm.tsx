@@ -15,20 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
-const jobRoleSchema = z.enum([
-  "front-end",
-  "back-end",
-  "full-stack",
-  "ai-engineer",
-  "network-engineer",
-  "cloud-architect",
-  "data-analyst",
-  "python-developer",
-  "js-developer",
-  "java-developer",
-  "android-developer",
-]);
+import { jobRoleSchema } from "@/types/InterviewData";
 
 const formSchema = z.object({
   yearsOfExperience: z
@@ -38,9 +25,6 @@ const formSchema = z.object({
   jobRole: jobRoleSchema,
   skills: z.array(z.string()).nonempty("At least one skill is required"),
 });
-
-// type JobRoleType = z.infer<typeof jobRoleSchema>;
-// type AboutCandidateType = z.infer<typeof formSchema>;
 
 function SessionInfoForm() {
 

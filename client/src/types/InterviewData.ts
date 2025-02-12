@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export type RoundType = "aptitude" | "technical" | "behavioral" | "system-design";
 
 export type QuestionAnswerType = {
@@ -7,18 +9,21 @@ export type QuestionAnswerType = {
   timeLimit: number;
 };
 
-export type JobRoleType =
-  | "front-end"
-  | "back-end"
-  | "full-stack"
-  | "ai-engineer"
-  | "network-engineer"
-  | "cloud-architect"
-  | "data-analyst"
-  | "python-developer"
-  | "js-developer"
-  | "java-developer"
-  | "android-developer";
+export const jobRoleSchema = z.enum([
+  "front-end",
+  "back-end",
+  "full-stack",
+  "ai-engineer",
+  "network-engineer",
+  "cloud-architect",
+  "data-analyst",
+  "python-developer",
+  "js-developer",
+  "java-developer",
+  "android-developer",
+]);
+
+export type JobRoleType = z.infer<typeof jobRoleSchema>;
 
 export type AboutCandidateType = {
   name: string;
