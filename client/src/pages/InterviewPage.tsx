@@ -72,30 +72,32 @@ function InterviewPage() {
       return;
     }
 
+    socket.emit("update-question-data", {
+      questionAnswerIndex: currentQuestionIndex,
+      answer: transcribedText
+    })
+
     updateAnswer(transcribedText, currentQuestionIndex)
 
-    const previousRoundAndTimeLimit = selectRoundAndTimeLimit(currentQuestionIndex)
+    const roundAndTimeLimit = selectRoundAndTimeLimit(currentQuestionIndex + 1)
 
-    // send previous question data to the backend
-    socket.emit("previous-question-data", {
-      question: questionAnswerSets[currentQuestionIndex].question,
-      answer: transcribedText,
-      timeLimit: previousRoundAndTimeLimit.timeLimit,
-      round: previousRoundAndTimeLimit.round,
-      // TODO: add more analytics data
-    });
-
-    const text = await getNextQuestion(transcribedText);
-    if (!text) {
+    const newGeneratedQuestion = await getNextQuestion(transcribedText);
+    if (!newGeneratedQuestion) {
       toast({ title: "Something went wrong while generating question" })
       return
     }
 
-    const roundAndTimeLimit = selectRoundAndTimeLimit(currentQuestionIndex + 1)
-
     // update question states
-    addQuestionAnswerSet({ question: text, answer: "", round: roundAndTimeLimit.round, timeLimit: roundAndTimeLimit.timeLimit });
+    addQuestionAnswerSet({ question: newGeneratedQuestion, answer: "", round: roundAndTimeLimit.round, timeLimit: roundAndTimeLimit.timeLimit });
     setCurrentQuestionIndex(prev => prev + 1)
+
+    // send new question initial data to the backend
+    socket.emit("initialize-new-question", {
+      question: newGeneratedQuestion,
+      answer: transcribedText,
+      timeLimit: roundAndTimeLimit.timeLimit,
+      round: roundAndTimeLimit.round,
+    });
   }
 
   // useEffect for initial setup
