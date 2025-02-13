@@ -23,30 +23,14 @@ function InterviewPage() {
   const [resettingQuestion, setResettingQuestion] = useState(false);
 
   const navigate = useNavigate()
-  useAutoSpeechRecognizer(currentQuestionIndex)
-
-  // helper function for transcribing video into text
-  const handleVideoTranscription = async () => {
-    try {
-      // TODO: Convert video into text and return it
-      return "example text cause of typescript";
-    } catch (error) {
-      if (error instanceof Error) {
-        toast({ title: error.message })
-      } else {
-        toast({ title: "Something went wrong while processing video" })
-        console.log(error)
-      }
-      return null;
-    }
-  }
+  const { transcript } = useAutoSpeechRecognizer(currentQuestionIndex);
 
   // helper function for generating next question using gemini API
   const getNextQuestion = useCallback(async (transcribedText: string) => {
     if (!candidate) return;
-  
+
     const roundAndTimeLimit = selectRoundAndTimeLimit(currentQuestionIndex + 1);
-  
+
     const data = {
       yearsOfExperience: candidate.yearsOfExperience,
       candidateName: candidate.name,
@@ -56,80 +40,74 @@ function InterviewPage() {
       timeLimit: roundAndTimeLimit.timeLimit,
       previousAnswer: transcribedText,
     };
-  
+
     // Timeout after 10 seconds if API is slow
     const timeoutPromise = new Promise<string | null>((resolve) =>
       setTimeout(() => resolve(null), 10000)
     );
-  
+
     const aiPromise = generateNextQuestion(data);
-  
+
     const text = await Promise.race([aiPromise, timeoutPromise]); // Whichever finishes first
-  
+
     if (!text) {
       console.warn("⏳ AI API Timed Out!");
       toast({ title: "AI took too long. Try again." });
       return null;
     }
-  
+
     return text;
-  }, [candidate, currentQuestionIndex]);  
+  }, [candidate, currentQuestionIndex]);
 
   // main function to reset the question
   const handleResetQuestion = async () => {
-  
+
     if (!questionAnswerSets) return;
-  
+
     // Block multiple resets
     if (resettingQuestion) return;
     setResettingQuestion(true);
-  
+
     try {
-      console.time("📌 Transcription Time");
-      const transcribedText = await handleVideoTranscription();
-      console.timeEnd("📌 Transcription Time");
-  
-      if (!transcribedText) {
-        toast({ title: "Something went wrong while processing video" });
-        return;
-      }
-  
+
       socket.emit("update-question-data", {
         questionAnswerIndex: currentQuestionIndex,
-        answer: transcribedText,
+        answer: transcript,
       });
-  
-      updateAnswer(transcribedText, currentQuestionIndex);
-  
+
+      console.log(transcript)
+
+      updateAnswer(transcript, currentQuestionIndex);
+
       console.time("📌 Question Generation Time");
-      const newGeneratedQuestion = await getNextQuestion(transcribedText);
+      const newGeneratedQuestion = await getNextQuestion(transcript);
       console.timeEnd("📌 Question Generation Time");
-  
+
       if (!newGeneratedQuestion) {
         toast({ title: "Something went wrong while generating question" });
         return;
       }
-  
+
       addQuestionAnswerSet({
         question: newGeneratedQuestion,
         answer: "",
         round: selectRoundAndTimeLimit(currentQuestionIndex + 1).round,
         timeLimit: selectRoundAndTimeLimit(currentQuestionIndex + 1).timeLimit,
       });
-  
+
       setCurrentQuestionIndex((prev) => prev + 1);
-  
+
       socket.emit("initialize-new-question", {
         question: newGeneratedQuestion,
         answer: "",
         timeLimit: selectRoundAndTimeLimit(currentQuestionIndex + 1).timeLimit,
         round: selectRoundAndTimeLimit(currentQuestionIndex + 1).round,
       });
-  
+
     } finally {
       setResettingQuestion(false);
     }
-  };  
+  };
 
   // useEffect for initial setup
   useEffect(() => {
@@ -145,7 +123,7 @@ function InterviewPage() {
       }
     }
     initialSetup()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addQuestionAnswerSet, candidate, getNextQuestion, socket])
 
   // socket event handlers
@@ -189,7 +167,7 @@ function InterviewPage() {
       socket.off("disconnect", handleDisconnect);
       socket.off("connect_error", handleConnectError);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [candidate, navigate, setSocketId]);
 
   return (

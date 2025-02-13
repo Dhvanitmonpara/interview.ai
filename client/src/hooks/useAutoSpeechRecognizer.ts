@@ -46,6 +46,7 @@ export function useAutoSpeechRecognizer(questionAnswerIndex: number) {
     console.log(`Live transcript: ${transcript}`);
 
     prevQuestionAnswerIndex.current = questionAnswerIndex;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questionAnswerIndex, browserSupportsSpeechRecognition, resetTranscript]);
 
   const combinedTranscript = storedTranscript + transcript;
