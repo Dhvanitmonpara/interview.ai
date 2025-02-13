@@ -61,7 +61,6 @@ function InterviewPage() {
 
   // main function to reset the question
   const handleResetQuestion = async () => {
-
     if (!questionAnswerSets) return;
 
     // Block multiple resets
@@ -75,13 +74,9 @@ function InterviewPage() {
         answer: transcript,
       });
 
-      console.log(transcript)
-
       updateAnswer(transcript, currentQuestionIndex);
 
-      console.time("📌 Question Generation Time");
       const newGeneratedQuestion = await getNextQuestion(transcript);
-      console.timeEnd("📌 Question Generation Time");
 
       if (!newGeneratedQuestion) {
         toast({ title: "Something went wrong while generating question" });
@@ -211,9 +206,6 @@ function InterviewPage() {
             {/* avatar */}
             <p className="p-4">{questionAnswerSets && questionAnswerSets[currentQuestionIndex]?.question || "No question found"}</p>
           </div>
-          {/* <div className="mt-4 px-4 text-xl">
-            Current detected state: <strong>{emotionalState}</strong>
-          </div> */}
         </div>
       </div>
     </div >

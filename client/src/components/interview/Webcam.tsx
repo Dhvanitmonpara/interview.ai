@@ -38,7 +38,6 @@ function isLightingGood(video: HTMLVideoElement, threshold = 80): boolean {
   }
   
   const avgLuminance = totalLuminance / pixelCount;
-  console.log("avgLuminance:", avgLuminance);
   return avgLuminance > threshold;
 }
 

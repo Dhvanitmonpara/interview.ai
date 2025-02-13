@@ -20,7 +20,6 @@ export function useAutoSpeechRecognizer(questionAnswerIndex: number) {
       return;
     }
 
-    console.log("Starting speech recognition");
     SpeechRecognition.startListening({ continuous: true, language: "en-IN" });
 
     return () => {
@@ -35,15 +34,11 @@ export function useAutoSpeechRecognizer(questionAnswerIndex: number) {
     if (previousIndex !== null) {
       const combinedTranscript = storedTranscript + transcriptRef.current;
       previousTranscriptions[previousIndex] = combinedTranscript;
-      console.log(`Stored transcript for question ${previousIndex}: ${combinedTranscript}`);
     }
 
     const newStoredTranscript = previousTranscriptions[questionAnswerIndex] || "";
     setStoredTranscript(newStoredTranscript);
     resetTranscript();
-
-    console.log(`Switched to question ${questionAnswerIndex}. Stored transcript: ${newStoredTranscript}`);
-    console.log(`Live transcript: ${transcript}`);
 
     prevQuestionAnswerIndex.current = questionAnswerIndex;
   // eslint-disable-next-line react-hooks/exhaustive-deps
