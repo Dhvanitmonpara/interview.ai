@@ -48,12 +48,12 @@ io.on('connection', (socket) => {
     socket.on("initialize-new-question", (data) => {
         if (runningInterviewSession.has(socket.id)) {
             const session = runningInterviewSession.get(socket.id);
-    
+
             // Set endTime for the previous question (last entry in responses array)
             if (session.responses.length > 0) {
                 session.responses[session.responses.length - 1].endTime = Date.now();
             }
-    
+
             // Add new question
             const newQuestion = {
                 question: data.question || "",
@@ -65,13 +65,13 @@ io.on('connection', (socket) => {
                 faceExpressions: [],
                 gazeTracking: []
             };
-    
+
             session.responses.push(newQuestion);
-    
+
             // Update the session in runningInterviewSession
             runningInterviewSession.set(socket.id, session);
         }
-    });    
+    });
 
     // Update question data
     socket.on("update-question-data", (data) => {
