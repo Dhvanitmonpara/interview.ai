@@ -11,6 +11,7 @@ import { generateNextQuestion } from "@/utils/handleQuestionAnswer";
 import selectRoundAndTimeLimit from "@/utils/selectRoundAndTimeLimit";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SpeechRecognition from "@/components/interview/SpeechRecognition"
 
 function InterviewPage() {
 
@@ -142,13 +143,13 @@ function InterviewPage() {
     };
 
     socket.on("connect", handleConnect);
-    socket.on("interview-analytics", handleInterviewAnalyticsData );
+    socket.on("interview-analytics", handleInterviewAnalyticsData);
     socket.on("disconnect", handleDisconnect);
     socket.on("connect_error", handleConnectError);
-    
+
     return () => {
       socket.off("connect", handleConnect);
-      socket.off("interview-analytics", handleInterviewAnalyticsData );
+      socket.off("interview-analytics", handleInterviewAnalyticsData);
       socket.off("disconnect", handleDisconnect);
       socket.off("connect_error", handleConnectError);
     };
@@ -191,6 +192,7 @@ function InterviewPage() {
         <div className="col-span-2">
           {/* webcam */}
           <Webcam questionAnswerIndex={currentQuestionIndex} />
+          <SpeechRecognition />
           <div className="h-full w-full bg-red-500">
             {/* avatar */}
             <p className="p-4">{questionAnswerSets && questionAnswerSets[currentQuestionIndex]?.question || "No question found"}</p>
@@ -200,7 +202,7 @@ function InterviewPage() {
           </div> */}
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 
