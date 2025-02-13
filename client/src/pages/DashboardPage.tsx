@@ -15,9 +15,9 @@ function DashboardPage() {
     <div className="h-full w-full">
       <p className="text-white dark:text-black">dashboard</p>
       <Button onClick={sessionHandler}>Start session</Button>
-      {/* <div className="p-4 rounded-md">
+      <div className="p-4 rounded-md">
         <CodeEditor />
-      </div> */}
+      </div>
       <div className="h-56 w-56 bg-gray-700">
         <SpeechRecognition />
       </div>
