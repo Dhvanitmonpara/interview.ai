@@ -4,6 +4,7 @@ import Webcam from "@/components/interview/Webcam";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
+import { useAutoSpeechRecognizer } from "@/hooks/useAutoSpeechRecognizer";
 import useSocket from "@/socket/useSocket";
 import useInterviewStore from "@/store/interviewStore";
 import useSocketStore from "@/store/socketStore";
@@ -11,7 +12,6 @@ import { generateNextQuestion } from "@/utils/handleQuestionAnswer";
 import selectRoundAndTimeLimit from "@/utils/selectRoundAndTimeLimit";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import SpeechRecognition from "@/components/interview/SpeechRecognition"
 
 function InterviewPage() {
 
@@ -22,6 +22,7 @@ function InterviewPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const navigate = useNavigate()
+  useAutoSpeechRecognizer(currentQuestionIndex)
 
   // helper function for transcribing video into text
   const handleVideoTranscription = async () => {
@@ -192,7 +193,6 @@ function InterviewPage() {
         <div className="col-span-2">
           {/* webcam */}
           <Webcam questionAnswerIndex={currentQuestionIndex} />
-          <SpeechRecognition />
           <div className="h-full w-full bg-red-500">
             {/* avatar */}
             <p className="p-4">{questionAnswerSets && questionAnswerSets[currentQuestionIndex]?.question || "No question found"}</p>

@@ -141,6 +141,7 @@ function Webcam({ questionAnswerIndex }: { questionAnswerIndex: number }) {
       // Create canvas only once.
       if (!canvasRef.current) {
         const canvas = createCanvasFromMedia(video) as HTMLCanvasElement;
+        canvas.style.display = 'none';
         document.body.append(canvas);
         canvasRef.current = canvas;
       }

@@ -48,15 +48,14 @@ io.on('connection', (socket) => {
     // face expression data
     socket.on("face-expression-data", ({ expressionState, timeStamp, questionAnswerIndex }) => {
         if (runningInterviewSession.has(socket.id)) {
-            runningInterviewSession.get(socket.id)[questionAnswerIndex].faceExpressions.push(expressionState, timeStamp)
-            console.log(runningInterviewSession.get(socket.id))
+            runningInterviewSession.get(socket.id).responses[questionAnswerIndex].faceExpressions.push(expressionState, timeStamp)
         }
     })
 
     // previous question data
     socket.on("previous-question-data", (data) => {
         if (runningInterviewSession.has(socket.id)) {
-            runningInterviewSession.get(socket.id).push(data)
+            runningInterviewSession.get(socket.id).responses.push(data)
         }
     })
 
