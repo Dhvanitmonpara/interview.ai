@@ -20,6 +20,7 @@ function InterviewPage() {
   const { candidate, questionAnswerSets, addQuestionAnswerSet, updateAnswer } = useInterviewStore()
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [resettingQuestion, setResettingQuestion] = useState(false);
 
   const navigate = useNavigate()
   useAutoSpeechRecognizer(currentQuestionIndex)
@@ -42,8 +43,10 @@ function InterviewPage() {
 
   // helper function for generating next question using gemini API
   const getNextQuestion = useCallback(async (transcribedText: string) => {
-    if (!candidate) return
-    const roundAndTimeLimit = selectRoundAndTimeLimit(currentQuestionIndex + 1)
+    if (!candidate) return;
+  
+    const roundAndTimeLimit = selectRoundAndTimeLimit(currentQuestionIndex + 1);
+  
     const data = {
       yearsOfExperience: candidate.yearsOfExperience,
       candidateName: candidate.name,
@@ -51,54 +54,91 @@ function InterviewPage() {
       skills: candidate.skills,
       round: roundAndTimeLimit.round,
       timeLimit: roundAndTimeLimit.timeLimit,
-      previousAnswer: transcribedText
-    }
-    const text = await generateNextQuestion(data)
+      previousAnswer: transcribedText,
+    };
+  
+    // Timeout after 10 seconds if API is slow
+    const timeoutPromise = new Promise<string | null>((resolve) =>
+      setTimeout(() => resolve(null), 10000)
+    );
+  
+    console.log("📡 Calling AI API for Next Question...");
+    const aiPromise = generateNextQuestion(data);
+  
+    const text = await Promise.race([aiPromise, timeoutPromise]); // Whichever finishes first
+  
     if (!text) {
-      toast({ title: "Something went wrong while generating question" })
-      return
+      console.warn("⏳ AI API Timed Out!");
+      toast({ title: "AI took too long. Try again." });
+      return null;
     }
-    return text
-  }, [candidate, currentQuestionIndex])
+  
+    console.log("✅ AI Response Received:", text);
+    return text;
+  }, [candidate, currentQuestionIndex]);  
 
   // main function to reset the question
   const handleResetQuestion = async () => {
-
-    if (!questionAnswerSets) return
-
-    const transcribedText = await handleVideoTranscription();
-    if (!transcribedText) {
-      toast({ title: "Something went wrong while processing video" })
-      return;
+    console.log("⏳ Resetting question...");
+  
+    if (!questionAnswerSets) return;
+  
+    // Block multiple resets
+    if (resettingQuestion) return;
+    setResettingQuestion(true);
+  
+    try {
+      console.time("📌 Transcription Time");
+      const transcribedText = await handleVideoTranscription();
+      console.timeEnd("📌 Transcription Time");
+  
+      if (!transcribedText) {
+        toast({ title: "Something went wrong while processing video" });
+        return;
+      }
+  
+      console.log("🎤 Transcribed Text:", transcribedText);
+  
+      socket.emit("update-question-data", {
+        questionAnswerIndex: currentQuestionIndex,
+        answer: transcribedText,
+      });
+  
+      updateAnswer(transcribedText, currentQuestionIndex);
+  
+      console.time("📌 Question Generation Time");
+      const newGeneratedQuestion = await getNextQuestion(transcribedText);
+      console.timeEnd("📌 Question Generation Time");
+  
+      if (!newGeneratedQuestion) {
+        toast({ title: "Something went wrong while generating question" });
+        return;
+      }
+  
+      console.log("❓ New Generated Question:", newGeneratedQuestion);
+  
+      addQuestionAnswerSet({
+        question: newGeneratedQuestion,
+        answer: "",
+        round: selectRoundAndTimeLimit(currentQuestionIndex + 1).round,
+        timeLimit: selectRoundAndTimeLimit(currentQuestionIndex + 1).timeLimit,
+      });
+  
+      setCurrentQuestionIndex((prev) => prev + 1);
+  
+      console.log("📡 Emitting New Question to Backend");
+      socket.emit("initialize-new-question", {
+        question: newGeneratedQuestion,
+        answer: "",
+        timeLimit: selectRoundAndTimeLimit(currentQuestionIndex + 1).timeLimit,
+        round: selectRoundAndTimeLimit(currentQuestionIndex + 1).round,
+      });
+  
+      console.log("✅ Question Reset Complete");
+    } finally {
+      setResettingQuestion(false);
     }
-
-    socket.emit("update-question-data", {
-      questionAnswerIndex: currentQuestionIndex,
-      answer: transcribedText
-    })
-
-    updateAnswer(transcribedText, currentQuestionIndex)
-
-    const roundAndTimeLimit = selectRoundAndTimeLimit(currentQuestionIndex + 1)
-
-    const newGeneratedQuestion = await getNextQuestion(transcribedText);
-    if (!newGeneratedQuestion) {
-      toast({ title: "Something went wrong while generating question" })
-      return
-    }
-
-    // update question states
-    addQuestionAnswerSet({ question: newGeneratedQuestion, answer: "", round: roundAndTimeLimit.round, timeLimit: roundAndTimeLimit.timeLimit });
-    setCurrentQuestionIndex(prev => prev + 1)
-
-    // send new question initial data to the backend
-    socket.emit("initialize-new-question", {
-      question: newGeneratedQuestion,
-      answer: transcribedText,
-      timeLimit: roundAndTimeLimit.timeLimit,
-      round: roundAndTimeLimit.round,
-    });
-  }
+  };  
 
   // useEffect for initial setup
   useEffect(() => {
@@ -114,7 +154,8 @@ function InterviewPage() {
       }
     }
     initialSetup()
-  }, [addQuestionAnswerSet, candidate, getNextQuestion, questionAnswerSets, socket])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addQuestionAnswerSet, candidate, getNextQuestion, socket])
 
   // socket event handlers
   useEffect(() => {
@@ -157,7 +198,8 @@ function InterviewPage() {
       socket.off("disconnect", handleDisconnect);
       socket.off("connect_error", handleConnectError);
     };
-  }, [candidate, currentQuestionIndex, navigate, setSocketId, socket]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [candidate, navigate, setSocketId]);
 
   return (
     <div className="">
