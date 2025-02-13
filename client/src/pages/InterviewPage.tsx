@@ -108,6 +108,7 @@ function InterviewPage() {
         }
         addQuestionAnswerSet({ question: text, answer: "", round: "aptitude", timeLimit: 60 });
         socket.emit("initial-setup", candidate)
+        socket.emit("initialize-new-question", { question: text, round: "aptitude", timeLimit: 60 })
       }
     }
     initialSetup()
