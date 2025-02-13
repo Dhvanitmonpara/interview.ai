@@ -1,4 +1,4 @@
-import { RoundType } from "@/types/InterviewData";
+import { QuestionAnswerType, RoundType } from "@/types/InterviewData";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Access your API key as an environment variable
@@ -64,11 +64,79 @@ Generate a question accordingly.
   `;
 };
 
+const getBasePromptForQuestionFeedback = (candidateDetails: candidateDetailsType, questionAnswerSets: QuestionAnswerType[]) => {
+  return `
+You are an expert interview feedback generator. You are provided with a candidate's detailed profile and a series of interview question sets along with the candidate's answers. Your task is to analyze the candidate's responses and generate actionable feedback.
+
+For each question set, produce an object with the following structure:
+- **feedback**: A string summarizing the overall quality of the candidate's answer, including strengths and weaknesses.
+- **improvements**: An array of objects, where each object includes:
+  - **measure**: A specific improvement recommendation (e.g., "Improve clarity in your explanations", "Provide more concrete examples").
+  - **skill**: The related skill or area that needs improvement (e.g., "communication", "technical knowledge", "problem solving").
+
+The final output should be an array of these objects, one for each question set.
+
+**Input Data Structure:**
+
+- **Candidate Details:**  ${JSON.stringify(candidateDetails)}
+
+- **Question Sets:**  ${JSON.stringify(questionAnswerSets)}
+
+**Example Output Format:**
+[
+  {
+    "feedback": "Your answer to the first question was detailed but lacked a clear structure. You explained the technical details well but could benefit from providing a concise summary at the end.",
+    "improvements": [
+      {
+        "measure": "Structure your answers with a brief summary and then dive into details.",
+        "skill": "communication"
+      },
+      {
+        "measure": "Practice summarizing complex topics in simple terms.",
+        "skill": "clarity"
+      }
+    ]
+  },
+  {
+    "feedback": "The second answer demonstrated strong problem-solving skills, but you missed providing concrete examples to back your claims.",
+    "improvements": [
+      {
+        "measure": "Include real-world examples to support your problem-solving approach.",
+        "skill": "analytical skills"
+      }
+    ]
+  }
+]
+  `;
+};
+
 export async function generateNextQuestion(
   candidateDetails: candidateDetailsType
 ): Promise<string | null> {
   try {
     const basePrompt = getBasePromptForNextQuestion(candidateDetails);
+    const result = await model.generateContent(basePrompt + prompt);
+    const text = result.response.text();
+    return text;
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      (error.message.includes("429") || error.message.includes("403"))
+    ) {
+      console.error("API Quota Exceeded or API Key Expired:", error.message);
+    } else {
+      console.error("Error generating content:", error);
+    }
+    return null;
+  }
+}
+
+export async function generateFeedback(
+  candidateDetails: candidateDetailsType,
+  questionAnswerSets: QuestionAnswerType[]
+): Promise<string | null> {
+  try {
+    const basePrompt = getBasePromptForQuestionFeedback(candidateDetails, questionAnswerSets);
     const result = await model.generateContent(basePrompt + prompt);
     const text = result.response.text();
     return text;

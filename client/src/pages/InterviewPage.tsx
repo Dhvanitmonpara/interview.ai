@@ -62,7 +62,6 @@ function InterviewPage() {
       setTimeout(() => resolve(null), 10000)
     );
   
-    console.log("📡 Calling AI API for Next Question...");
     const aiPromise = generateNextQuestion(data);
   
     const text = await Promise.race([aiPromise, timeoutPromise]); // Whichever finishes first
@@ -73,13 +72,11 @@ function InterviewPage() {
       return null;
     }
   
-    console.log("✅ AI Response Received:", text);
     return text;
   }, [candidate, currentQuestionIndex]);  
 
   // main function to reset the question
   const handleResetQuestion = async () => {
-    console.log("⏳ Resetting question...");
   
     if (!questionAnswerSets) return;
   
@@ -97,8 +94,6 @@ function InterviewPage() {
         return;
       }
   
-      console.log("🎤 Transcribed Text:", transcribedText);
-  
       socket.emit("update-question-data", {
         questionAnswerIndex: currentQuestionIndex,
         answer: transcribedText,
@@ -115,8 +110,6 @@ function InterviewPage() {
         return;
       }
   
-      console.log("❓ New Generated Question:", newGeneratedQuestion);
-  
       addQuestionAnswerSet({
         question: newGeneratedQuestion,
         answer: "",
@@ -126,7 +119,6 @@ function InterviewPage() {
   
       setCurrentQuestionIndex((prev) => prev + 1);
   
-      console.log("📡 Emitting New Question to Backend");
       socket.emit("initialize-new-question", {
         question: newGeneratedQuestion,
         answer: "",
@@ -134,7 +126,6 @@ function InterviewPage() {
         round: selectRoundAndTimeLimit(currentQuestionIndex + 1).round,
       });
   
-      console.log("✅ Question Reset Complete");
     } finally {
       setResettingQuestion(false);
     }
