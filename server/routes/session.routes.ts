@@ -6,7 +6,7 @@ import {
     getSession,
     getSessionData,
     getAllSessions,
-} from "../controllers/session.controller.js";
+} from "../controllers/session.controller";
 
 const router = Router()
 

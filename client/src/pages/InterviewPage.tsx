@@ -69,6 +69,7 @@ function InterviewPage() {
 
     try {
 
+      console.log("runnn")
       socket.emit("update-question-data", {
         questionAnswerIndex: currentQuestionIndex,
         answer: transcript,
