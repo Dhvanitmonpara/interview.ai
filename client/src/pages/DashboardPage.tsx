@@ -1,4 +1,3 @@
-import CodeEditor from "@/components/general/CodeEditor"
 import SpeechRecognition from "@/components/general/SpeechRecognition"
 import { Button } from "@/components/ui/button"
 import { useNavigate } from "react-router-dom"
