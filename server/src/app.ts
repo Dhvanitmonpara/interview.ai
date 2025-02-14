@@ -54,7 +54,7 @@ type QuestionSchema = {
 type InterviewSession = {
   sessionId: string;
   candidate: {
-    id: string;
+    email: string;
     name: string;
     jobRole: string;
     skills: string[];

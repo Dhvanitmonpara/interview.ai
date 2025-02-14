@@ -41,11 +41,12 @@ function SessionInfoForm() {
   })
 
   const navigate = useNavigate()
-  const userName = useUser().user?.firstName
+  const user = useUser().user
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     setCandidate({
-      name: userName || null,
+      email: user?.primaryEmailAddress?.emailAddress || null,
+      name: user?.username || null,
       yearsOfExperience: values.yearsOfExperience,
       jobRole: values.jobRole,
       skills: values.skills
