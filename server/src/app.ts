@@ -89,7 +89,7 @@ io.on("connection", (socket) => {
     try {
       const session: InterviewSession = {
         sessionId: socket.id,
-        candidate: data.candidate || {
+        candidate: data || {
           id: "",
           name: "",
           jobRole: "",

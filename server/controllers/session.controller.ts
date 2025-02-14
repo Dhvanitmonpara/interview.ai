@@ -14,11 +14,16 @@ const createSession = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       res.status(500).json({
         success: false,
-        message: "Failed to send feedback due to server error",
+        message: "Failed to create session in the database",
         error: error.message,
       });
     } else {
       console.error("Error in sendFeedback:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to create session in the database",
+        error: "Unknown error",
+      });
     }
   }
 };
