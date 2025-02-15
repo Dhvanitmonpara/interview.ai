@@ -6,6 +6,7 @@ import { Button } from '../ui/button';
 import { ExecuteCode } from './ExecuteCode';
 import { toast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import useProfileStore from '@/store/profileStore';
 
 interface CodeEditorProps {
     language: string;
@@ -21,6 +22,8 @@ function CodeEditor() {
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
     const [output, setOutput] = useState(null);
+
+    const { profile } = useProfileStore()
 
     const runCode = async () => {
         if (!editorRef.current) return
@@ -55,7 +58,7 @@ function CodeEditor() {
         setLanguage(language.toLowerCase());
     }
     return (
-        <div className="col-span-7 max-h-[80vh] relative">
+        <div className="max-h-[80vh] h-full relative">
             <div className='flex space-x-2 pb-2'>
                 <LanguageSelector language={language} ChangeLanguage={ChangeLanguage} />
                 <Button onClick={() => { setIsTerminalOpen(!isTerminalOpen); runCode() }}>
@@ -69,7 +72,7 @@ function CodeEditor() {
             <Editor
                 height="100%"
                 width="100%"
-                theme="vs-dark"
+                theme={profile ? "vs" :"vs-dark"}
                 value={value}
                 onMount={onMountHandler}
                 onChange={(e: string | undefined) => {

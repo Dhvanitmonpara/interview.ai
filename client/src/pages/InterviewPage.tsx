@@ -200,16 +200,17 @@ function InterviewPage() {
         </div>
       </div>
 
-      <div className="flex justify-center rounded-xl mt-2 w-[70vw] bg-blue-100 text-zinc-900 shadow-xl mx-auto">
-        <div className="h-20 px-20 font-semibold overflow-auto py-1 z-10 ">
-          <p className="">
-            {questionAnswerSets && questionAnswerSets[currentQuestionIndex]?.question || "No question found"}
-          </p>
-        </div>
-      </div>
+
       {selectRoundAndTimeLimit(currentQuestionIndex).round === "technical" ?
         <div className="p-4 rounded-md grid grid-cols-9 gap-4">
-          <CodeEditor />
+          <div className="col-span-7 h-[80vh]">
+            <div className="h-20 px-20 font-semibold bg-blue-200 text-zinc-900 rounded-lg mb-2 overflow-auto py-1 z-10 ">
+              <p className="">
+                {questionAnswerSets && questionAnswerSets[currentQuestionIndex]?.question || "No question found"}
+              </p>
+            </div>
+            <CodeEditor />
+          </div>
           <div className="col-span-2">
             <Avatar3D text={questionAnswerSets && questionAnswerSets[currentQuestionIndex].question || "No question found"} />
             <Webcam height={480} width={480} videoHeight={480} videoWidth={480} questionAnswerIndex={currentQuestionIndex} />
@@ -217,6 +218,11 @@ function InterviewPage() {
         </div>
         :
         <div className="flex justify-center items-center min-h-[80vh] space-x-2">
+          <div className="h-20 px-20 font-semibold overflow-auto py-1 z-10 ">
+            <p className="">
+              {questionAnswerSets && questionAnswerSets[currentQuestionIndex]?.question || "No question found"}
+            </p>
+          </div>
           <Avatar3DVariant
             text={questionAnswerSets && questionAnswerSets[currentQuestionIndex].question || "No question found"}
           />

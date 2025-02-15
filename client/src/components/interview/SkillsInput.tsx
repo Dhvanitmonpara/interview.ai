@@ -31,9 +31,9 @@ function SkillsInput({ value = [], onChange }: { value: string[]; onChange: (ski
       </div>
       <div className="flex flex-wrap gap-2">
         {value.map((skill) => (
-          <span key={skill} className="text-white border-[1px] text-sm border-zinc-700 px-2.5 py-1 rounded-md flex items-center">
+          <span key={skill} className="text-black dark:text-white border-[1px] text-sm border-zinc-700 px-2.5 py-1 rounded-md flex items-center">
             {skill}
-            <button type="button" className="ml-2 text-zinc-100" onClick={() => removeSkill(skill)}>
+            <button type="button" className="ml-2 text-zinc-900 dark:text-zinc-100" onClick={() => removeSkill(skill)}>
               ×
             </button>
           </span>
