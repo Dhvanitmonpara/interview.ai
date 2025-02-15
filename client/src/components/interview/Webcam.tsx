@@ -230,6 +230,7 @@ function Webcam({ questionAnswerIndex }: { questionAnswerIndex: number }) {
             ref={canvasRef}
             aria-label="Face detection overlay"
             style={{
+              display:"none",
               position: "absolute",
               top: 0,
               left: 0,
