@@ -13,6 +13,7 @@ import selectRoundAndTimeLimit from "@/utils/selectRoundAndTimeLimit";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Avatar3D from "@/components/general/Avatar3D"
+import Avatar3DVariant from "@/components/general/Avatar3DVariant"
 
 function InterviewPage() {
 
@@ -211,11 +212,11 @@ function InterviewPage() {
           </div>
         </div>
         :
-        <div className="flex justify-center items-center min-h-[80vh]">
-          <Avatar3D
+        <div className="flex justify-center items-center min-h-[80vh] space-x-2">
+          <Avatar3DVariant
             text={questionAnswerSets && questionAnswerSets[currentQuestionIndex].question || "No question found"}
           />
-          <Webcam height={480} width={480} videoHeight={580} videoWidth={540} questionAnswerIndex={currentQuestionIndex} />
+          <Webcam height={480} width={480} videoHeight={580} videoWidth={580} questionAnswerIndex={currentQuestionIndex} />
         </div>
       }
     </div >
