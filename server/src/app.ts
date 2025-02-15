@@ -103,11 +103,20 @@ io.on("connection", (socket) => {
         status: "pending",
       };
 
+      console.log(`New Session:`, session);
       runningInterviewSession.set(socket.id, session);
     } catch (error) {
       handleSocketError(socket, error);
     }
   });
+
+  const processAnalyticsData = () => {
+    try {
+      
+    } catch (error) {
+      throw error
+    }
+  }
 
   // Add new question
   socket.on("initialize-new-question", (data) => {
@@ -194,33 +203,6 @@ io.on("connection", (socket) => {
     }
   );
 
-  // Store gaze tracking data
-  socket.on(
-    "gaze-tracking-data",
-    ({ gazeTracking, timeStamp, questionAnswerIndex }) => {
-      try {
-        if (runningInterviewSession.has(socket.id)) {
-          const session = runningInterviewSession.get(socket.id);
-          if (!session) {
-            throw new Error("Session not found");
-          }
-          const question = session.questions[questionAnswerIndex];
-
-          if (question) {
-            question.gazeTracking.push({
-              timeStamp,
-              ...gazeTracking,
-            });
-          } else {
-            console.warn(`Invalid question index: ${questionAnswerIndex}`);
-          }
-        }
-      } catch (error) {
-        handleSocketError(socket, error);
-      }
-    }
-  );
-
   // Handle interview completion
   socket.on("interview-complete", () => {
     try {
@@ -232,7 +214,7 @@ io.on("connection", (socket) => {
         session.endTime = Date.now();
         session.status = "completed";
 
-        socket.emit("interview-analytics", true);
+        socket.emit("interview-analytics", processAnalyticsData);
       }
     } catch (error) {
       handleSocketError(socket, error);

@@ -12,6 +12,7 @@ import { generateNextQuestion } from "@/utils/handleQuestionAnswer";
 import selectRoundAndTimeLimit from "@/utils/selectRoundAndTimeLimit";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Avatar3D from "@/components/general/Avatar3D"
 
 function InterviewPage() {
 
@@ -69,7 +70,7 @@ function InterviewPage() {
 
     try {
 
-      console.log("runnn")
+      console.log("runnn", currentQuestionIndex, questionAnswerSets[currentQuestionIndex].answer)
       socket.emit("update-question-data", {
         questionAnswerIndex: currentQuestionIndex,
         answer: transcript,
@@ -203,12 +204,13 @@ function InterviewPage() {
         <div className="col-span-2">
           {/* webcam */}
           <Webcam questionAnswerIndex={currentQuestionIndex} />
-          <div className="h-full w-full bg-red-500">
+          <Avatar3D />
+            <div className="h-full w-full bg-red-500">
             {/* avatar */}
             <p className="p-4">{questionAnswerSets && questionAnswerSets[currentQuestionIndex]?.question || "No question found"}</p>
-          </div>
         </div>
       </div>
+    </div>
     </div >
   );
 }
