@@ -16,7 +16,7 @@ const SpeechRecognitionComponent: React.FC = () => {
         return null;
     }
 
-    const handleCopy = () => {
+    const handleCopy = () => {  
         setCopyText(transcript);
         setCopied();
     };

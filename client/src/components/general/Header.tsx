@@ -1,5 +1,4 @@
 import { useAuth, UserButton } from "@clerk/clerk-react"
-import { Input } from "../ui/input"
 import { Link, NavLink } from "react-router-dom"
 import ThemeToggler from "./ThemeToggler"
 import { Loader } from "lucide-react";
@@ -38,7 +37,6 @@ function Header() {
           ))}
         </ul>
         <div className="flex gap-4">
-          <Input placeholder="Search" />
           <ThemeToggler />
           <UserButton />
         </div>
