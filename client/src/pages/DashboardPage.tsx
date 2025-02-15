@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 import Container from "@/components/general/Container";
 import DataVisualization from "@/components/general/DataVisualization";
 import SelectRoles from "@/components/general/SelectRoles";
+=======
+import SpeechRecognition from "@/components/general/SpeechRecognition"
+import { Button } from "@/components/ui/button"
+import { useNavigate } from "react-router-dom"
+>>>>>>> 1c9147b1c1430cde0c88428ad073ab1fde97994f
 
 function DashboardPage() {
   return (
