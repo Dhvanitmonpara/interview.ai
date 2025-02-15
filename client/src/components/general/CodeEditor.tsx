@@ -2,6 +2,9 @@ import { useRef, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import LanguageSelector from '@/components/general/LanguageSelector';
 import Output from './Output';
+import { Button } from '../ui/button';
+import { ExecuteCode } from './ExecuteCode';
+import { toast } from '@/hooks/use-toast';
 
 interface CodeEditorProps {
     language: string;
@@ -13,7 +16,31 @@ function CodeEditor() {
     const editorRef = useRef<CodeEditorProps | null>(null);
     const [value, setValue] = useState<string>('');
     const [isTerminalOpen, setIsTerminalOpen] = useState(false);
-    const [language, setLanguage] = useState<string>('javascript');
+    const [language, setLanguage] = useState<string>('javascript')
+    const [isLoading, setIsLoading] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [output, setOutput] = useState(null);
+
+    const runCode = async () => {
+        if(!editorRef.current) return
+
+        const sourceCode = editorRef.current.getValue();
+        if (!sourceCode) return
+        try {
+            setIsLoading(true)
+            const { run: result } = await ExecuteCode(language, sourceCode);
+            setOutput(result.output);
+            setIsError(result.stderr ? true : false);
+        } catch (error) {
+            console.error('Error executing code:', error ? error : error);
+            toast({
+                variant: "destructive",
+                description: 'Error executing code'
+            })
+        } finally {
+            setIsLoading(false)
+        }
+    };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onMountHandler = (editorValue: any) => {
@@ -27,9 +54,14 @@ function CodeEditor() {
         setLanguage(language.toLowerCase());
     }
     return (
-        <div className="col-span-5 max-h-[90vh] relative">
-            <LanguageSelector language={language} ChangeLanguage={ChangeLanguage} />
-            
+        <div className="col-span-5 max-h-[80vh] relative">
+            <div className='flex space-x-2 pb-2'>
+                <LanguageSelector language={language} ChangeLanguage={ChangeLanguage} />
+                <Button onClick={() => {setIsTerminalOpen(!isTerminalOpen); runCode()}}>
+                    {isLoading ? 'Running...' : 'Run Code'}
+                </Button>
+            </div>
+
             <Editor
                 height="100%"
                 width="100%"
@@ -42,7 +74,7 @@ function CodeEditor() {
                 language={language}
                 defaultValue="// Start coding here..."
             />
-            <Output language={language} editorRef={editorRef} />
+            {isTerminalOpen && <Output output={output || "Unsaved"} isError={isError} />}
         </div>
     );
 }
