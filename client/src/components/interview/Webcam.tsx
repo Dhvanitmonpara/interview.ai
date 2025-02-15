@@ -92,7 +92,7 @@ function Webcam({ questionAnswerIndex }: { questionAnswerIndex: number }) {
     if (!videoRef.current) return;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: 640, height: 480 }
+        video: { width: 640, height: 580 }
       });
       videoRef.current.srcObject = stream;
     } catch (err) {

@@ -55,7 +55,7 @@ function CodeEditor() {
         setLanguage(language.toLowerCase());
     }
     return (
-        <div className="col-span-5 max-h-[80vh] relative">
+        <div className="col-span-7 max-h-[80vh] relative">
             <div className='flex space-x-2 pb-2'>
                 <LanguageSelector language={language} ChangeLanguage={ChangeLanguage} />
                 <Button onClick={() => { setIsTerminalOpen(!isTerminalOpen); runCode() }}>

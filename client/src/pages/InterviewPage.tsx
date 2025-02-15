@@ -202,13 +202,20 @@ function InterviewPage() {
       <div className="h-full w-full bg-red-500">
         <p className="py-2 px-4">{questionAnswerSets && questionAnswerSets[currentQuestionIndex]?.question || "No question found"}</p>
       </div>
-      <div className="p-4 rounded-md grid grid-cols-7 gap-4">
-        <CodeEditor />
-        <div className="col-span-2">
-          <Webcam questionAnswerIndex={currentQuestionIndex} />
-          <Avatar3D text={questionAnswerSets && questionAnswerSets[currentQuestionIndex].question || "No question found"} />
+      {selectRoundAndTimeLimit(currentQuestionIndex).round === "technical" ?
+        <div className="p-4 rounded-md grid grid-cols-9 gap-4">
+          <CodeEditor />
+          <div className="col-span-2">
+            <Avatar3D text={questionAnswerSets && questionAnswerSets[currentQuestionIndex].question || "No question found"} />
+            <Webcam questionAnswerIndex={currentQuestionIndex} />
+          </div>
         </div>
-      </div>
+        :
+        <div className="flex justify-center items-center min-h-[80vh]">
+          <Avatar3D text={questionAnswerSets && questionAnswerSets[currentQuestionIndex].question || "No question found"} />
+          <Webcam questionAnswerIndex={currentQuestionIndex} />
+        </div>
+      }
     </div >
   );
 }
