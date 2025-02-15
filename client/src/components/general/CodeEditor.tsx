@@ -5,6 +5,7 @@ import Output from './Output';
 import { Button } from '../ui/button';
 import { ExecuteCode } from './ExecuteCode';
 import { toast } from '@/hooks/use-toast';
+import { Loader2 } from 'lucide-react';
 
 interface CodeEditorProps {
     language: string;
@@ -22,7 +23,7 @@ function CodeEditor() {
     const [output, setOutput] = useState(null);
 
     const runCode = async () => {
-        if(!editorRef.current) return
+        if (!editorRef.current) return
 
         const sourceCode = editorRef.current.getValue();
         if (!sourceCode) return
@@ -57,8 +58,11 @@ function CodeEditor() {
         <div className="col-span-5 max-h-[80vh] relative">
             <div className='flex space-x-2 pb-2'>
                 <LanguageSelector language={language} ChangeLanguage={ChangeLanguage} />
-                <Button onClick={() => {setIsTerminalOpen(!isTerminalOpen); runCode()}}>
-                    {isLoading ? 'Running...' : 'Run Code'}
+                <Button onClick={() => { setIsTerminalOpen(!isTerminalOpen); runCode() }}>
+                    {isLoading ? <Loader2 className='animate-spin' /> : 'Run Code'}
+                </Button>
+                <Button onClick={() => setIsTerminalOpen(!isTerminalOpen)}>
+                    {isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}
                 </Button>
             </div>
 
@@ -75,7 +79,7 @@ function CodeEditor() {
                 defaultValue="// Start coding here..."
             />
             {isTerminalOpen && <Output output={output || "Unsaved"} isError={isError} />}
-        </div>
+        </div >
     );
 }
 

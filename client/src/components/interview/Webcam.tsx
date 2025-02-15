@@ -1,9 +1,7 @@
 import { useEffect, useRef } from 'react';
 import {
   nets,
-  resizeResults,
   matchDimensions,
-  draw,
   detectSingleFace,
 } from 'face-api.js';
 import useSocket from "@/socket/useSocket";
@@ -152,14 +150,9 @@ function Webcam({ questionAnswerIndex }: { questionAnswerIndex: number }) {
             console.warn("No face detected 😢");
           }
 
-          const resizedDetection = detection ? resizeResults(detection, displaySize) : null;
           const ctx = canvas.getContext("2d");
           if (ctx) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (resizedDetection) {
-              draw.drawDetections(canvas, resizedDetection);
-              draw.drawFaceExpressions(canvas, resizedDetection);
-            }
           }
         }
         animationFrameId.current = requestAnimationFrame(processVideoFrame);

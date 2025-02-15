@@ -200,7 +200,7 @@ function InterviewPage() {
       </div>
 
       <div className="h-full w-full bg-red-500">
-        <p className="p-4">{questionAnswerSets && questionAnswerSets[currentQuestionIndex]?.question || "No question found"}</p>
+        <p className="py-2 px-4">{questionAnswerSets && questionAnswerSets[currentQuestionIndex]?.question || "No question found"}</p>
       </div>
       <div className="p-4 rounded-md grid grid-cols-7 gap-4">
         <CodeEditor />
