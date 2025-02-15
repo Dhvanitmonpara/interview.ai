@@ -4,10 +4,17 @@ import { Link, NavLink } from "react-router-dom"
 import ThemeToggler from "./ThemeToggler"
 import { Loader } from "lucide-react";
 
-function Header() {
-  const {isLoaded} = useAuth();
+const navLinks = [
+  { to: "/", label: "Home" },
+  { to: "/dashboard", label: "Dashboard" },
+  { to: "/about", label: "About" },
+  { to: "/dashboard/form", label: "Form" },
+];
 
-  if(!isLoaded) {
+function Header() {
+  const { isLoaded } = useAuth();
+
+  if (!isLoaded) {
     return <Loader className="w-5 h-5 animate-spin" />
   }
 
@@ -18,9 +25,17 @@ function Header() {
           <img className="h-14 w-14" src="/Logo.png" alt="logo" />
         </Link>
         <ul className="flex gap-4">
-          <NavLink to="/" className={({ isActive }) => (`font-semibold ${isActive ? "text-zinc-950 dark:text-zinc-100" : "text-gray-500 dark:text-zinc-600"}`)}>Home</NavLink>
-          <NavLink to="/dashboard" className={({ isActive }) => (`font-semibold ${isActive ? "text-zinc-950 dark:text-zinc-100" : "text-gray-500 dark:text-zinc-600"}`)}>Dashboard</NavLink>
-          <NavLink to="/about" className={({ isActive }) => (`font-semibold ${isActive ? "text-zinc-950 dark:text-zinc-100" : "text-gray-500 dark:text-zinc-600"}`)}>About</NavLink>
+          {navLinks.map(({ to, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) =>
+                `font-semibold ${isActive ? "text-zinc-950 dark:text-zinc-100" : "text-gray-500 dark:text-zinc-600"}`
+              }
+            >
+              {label}
+            </NavLink>
+          ))}
         </ul>
         <div className="flex gap-4">
           <Input placeholder="Search" />
