@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { FaVideo, FaCode, FaChartBar, FaUsers, FaComments } from "react-icons/fa";
-import { Avatar } from "@/components/ui/avatar";
 
 export default function LandingPage() {
   return (
@@ -14,7 +13,6 @@ export default function LandingPage() {
       
       <section className="grid md:grid-cols-3 gap-6 mt-8 max-w-5xl mx-auto p-4">
         <Card className="p-6 text-center shadow-lg transform hover:scale-105 transition-all duration-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-          <Avatar className="w-16 h-16 mx-auto mb-4" src="" alt="User Avatar" />
           <FaVideo className="text-blue-600 dark:text-blue-400 text-4xl mx-auto mb-4" />
           <CardTitle className="text-xl">Live Video & Facial Analysis</CardTitle>
           <CardContent className="text-gray-600 dark:text-gray-300">Practice with real-time video and AI-based facial expression analysis.</CardContent>
