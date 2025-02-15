@@ -13,7 +13,7 @@ function Header() {
 
   return (
     <>
-      <nav className="fixed h-14 border-b-2 border-gray-200 dark:border-gray-800 px-32 top-0 left-0 w-full flex justify-between items-center p-4">
+      <nav className="fixed h-16 border border-gray-200 dark:border-gray-800 px-32 top-0 left-0 w-full flex justify-between items-center p-4">
         <div className="flex items-center gap-5">
           <Link to="/">
             <img src="/logo.svg" alt="logo" />
@@ -25,7 +25,6 @@ function Header() {
           </ul>
         </div>
         <div className="flex gap-4">
-          <Input placeholder="Search" />
           <ThemeToggler />
           <UserButton />
         </div>

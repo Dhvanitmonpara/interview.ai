@@ -9,8 +9,8 @@ interface FreeCourseCardProps {
 
 const roles = [
     { title: "Frontend Developer", description: "A Frontend Developer should be proficient in HTML, CSS, and JavaScript, along with frameworks ." },
-    { title: "MERN Stack Developer", description: "A MERN Stack Developer must have expertise in MongoDB, Express.js, React, and Node.js, along with RESTful APIs," },
-    { title: "Java Developer", description: "A Java Developer should be skilled in Java, Spring Boot, Hibernate, and database management using SQL" }
+    { title: "Backend Developer", description: "A MERN Stack Developer must have expertise in MongoDB, Express.js, React, and Node.js, along with RESTful APIs," },
+    { title: "MERN Stack Developer", description: "A Java Developer should be skilled in Java, Spring Boot, Hibernate, and database management using SQL" }
 ];
 
 function SelectRoles() {
@@ -19,9 +19,9 @@ function SelectRoles() {
     return (
         <div className="flex justify-between flex-wrap">
             {roles.map((role, index) => (
-                <Card
+                <Card   
                     key={index}
-                    className="dark:bg-[#212121] dark:text-neutral-300 w-72 cursor-pointer"
+                    className="dark:bg-[#212121] dark:text-neutral-300 w-[310px] cursor-pointer"
                     onClick={() => navigate("/interview")}
                 >
                     <CardHeader>

@@ -9,7 +9,7 @@ const data = [
 
 const AnalyticsPage: React.FC = () => {
     return (
-        <div className="p-6 bg-gray-100">
+        <div className="p-6">
             <div className="flex justify-center">
                 <PieChart width={400} height={400}>
                     <Pie
