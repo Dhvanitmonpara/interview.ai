@@ -6,7 +6,7 @@ import ThemeToggler from "./ThemeToggler"
 function Header() {
   return (
     <>
-      <nav className="fixed h-16 border-b-2 border-gray-200 dark:border-gray-800 px-32 top-0 left-0 w-full flex justify-between items-center p-4">
+      <nav className="fixed h-16 z-50 bg-zinc-100 dark:bg-zinc-900 border-b-2 border-gray-200 dark:border-gray-800 px-32 top-0 left-0 w-full flex justify-between items-center p-4">
         <Link to="/">
           <img className="h-14 w-14" src="/Logo.png" alt="logo" />
         </Link>
