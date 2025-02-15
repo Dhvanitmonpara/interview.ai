@@ -64,17 +64,14 @@ Generate a question accordingly.
   `;
 };
 
-const getBasePromptForQuestionFeedback = (candidateDetails: candidateDetailsType, questionAnswerSets: QuestionAnswerType[]) => {
+const getBasePromptForQuestionFeedback = (
+  candidateDetails: candidateDetailsType,
+  questionAnswerSets: QuestionAnswerType[]
+) => {
   return `
 You are an expert interview feedback generator. You are provided with a candidate's detailed profile and a series of interview question sets along with the candidate's answers. Your task is to analyze the candidate's responses and generate actionable feedback.
 
-For each question set, produce an object with the following structure:
-- **feedback**: A string summarizing the overall quality of the candidate's answer, including strengths and weaknesses.
-- **improvements**: An array of objects, where each object includes:
-  - **measure**: A specific improvement recommendation (e.g., "Improve clarity in your explanations", "Provide more concrete examples").
-  - **skill**: The related skill or area that needs improvement (e.g., "communication", "technical knowledge", "problem solving").
-
-The final output should be an array of these objects, one for each question set.
+For wrong questions provide an array in the following structure.
 
 **Input Data Structure:**
 
@@ -85,27 +82,17 @@ The final output should be an array of these objects, one for each question set.
 **Example Output Format:**
 [
   {
-    "feedback": "Your answer to the first question was detailed but lacked a clear structure. You explained the technical details well but could benefit from providing a concise summary at the end.",
-    "improvements": [
-      {
-        "measure": "Structure your answers with a brief summary and then dive into details.",
-        "skill": "communication"
-      },
-      {
-        "measure": "Practice summarizing complex topics in simple terms.",
-        "skill": "clarity"
-      }
-    ]
+    "question": "Question 1",
+    "feedback": "Provide feedback for question 1"
+    "score": "Provide score for question 1 in Number between 0-10 considering the candidate's performance, years of experience, job role and skills",
+    "correctAnswer": "Provide the correct answer for question 1 in brief"
   },
   {
-    "feedback": "The second answer demonstrated strong problem-solving skills, but you missed providing concrete examples to back your claims.",
-    "improvements": [
-      {
-        "measure": "Include real-world examples to support your problem-solving approach.",
-        "skill": "analytical skills"
-      }
-    ]
-  }
+    "question": "Question 2",
+    "feedback": "Provide feedback for question 2"
+    "score": "Provide score for question 2 in Number between 0-10 considering the candidate's performance, years of experience, job role and skills",
+    "correctAnswer": "Provide the correct answer for question 2 in brief"
+  },
 ]
   `;
 };
@@ -136,7 +123,10 @@ export async function generateFeedback(
   questionAnswerSets: QuestionAnswerType[]
 ): Promise<string | null> {
   try {
-    const basePrompt = getBasePromptForQuestionFeedback(candidateDetails, questionAnswerSets);
+    const basePrompt = getBasePromptForQuestionFeedback(
+      candidateDetails,
+      questionAnswerSets
+    );
     const result = await model.generateContent(basePrompt + prompt);
     const text = result.response.text();
     return text;
