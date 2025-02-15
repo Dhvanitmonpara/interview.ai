@@ -200,8 +200,12 @@ function InterviewPage() {
         </div>
       </div>
 
-      <div className="h-full w-full bg-red-500">
-        <p className="py-2 px-4">{questionAnswerSets && questionAnswerSets[currentQuestionIndex]?.question || "No question found"}</p>
+      <div className="flex justify-center rounded-xl mt-2 w-[70vw] bg-blue-100 text-zinc-900 shadow-xl mx-auto">
+        <div className="h-20 px-20 font-semibold overflow-auto py-1 z-10 ">
+          <p className="">
+            {questionAnswerSets && questionAnswerSets[currentQuestionIndex]?.question || "No question found"}
+          </p>
+        </div>
       </div>
       {selectRoundAndTimeLimit(currentQuestionIndex).round === "technical" ?
         <div className="p-4 rounded-md grid grid-cols-9 gap-4">
