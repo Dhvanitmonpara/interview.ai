@@ -208,7 +208,7 @@ function InterviewPage() {
           <CodeEditor />
           <div className="col-span-2">
             <Avatar3D text={questionAnswerSets && questionAnswerSets[currentQuestionIndex].question || "No question found"} />
-            <Webcam height={640} width={480} videoHeight={580} videoWidth={480} questionAnswerIndex={currentQuestionIndex} />
+            <Webcam height={480} width={480} videoHeight={480} videoWidth={480} questionAnswerIndex={currentQuestionIndex} />
           </div>
         </div>
         :

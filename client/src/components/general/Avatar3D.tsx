@@ -42,7 +42,7 @@ export default function ModelViewer({ text }: { text: string }) {
   }, [text, speak]);
 
   return (
-    <div className="relative bg-gray-800 overflow-hidden" style={{ width: "25rem", height: "20rem", position: "absolute" }}>
+    <div className="relative bg-gray-800 overflow-hidden" style={{ width: "25rem", height: "20rem" }}>
       <div className=" " style={{ width: "25rem", height: "65rem" }}>
         <Canvas camera={{ position: [0, 3, 8], fov: 62 }} >
           <ambientLight intensity={2} />
