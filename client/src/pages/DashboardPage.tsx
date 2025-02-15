@@ -1,28 +1,20 @@
-import CodeEditor from "@/components/general/CodeEditor"
-import SpeechRecognition from "@/components/general/SpeechRecognition"
-import { Button } from "@/components/ui/button"
-import { useNavigate } from "react-router-dom"
+import Container from "@/components/general/Container";
+import DataVisualization from "@/components/general/DataVisualization";
+import SelectRoles from "@/components/general/SelectRoles";
 
 function DashboardPage() {
-
-  const navigate = useNavigate()
-
-  const sessionHandler = () => {
-    navigate(`/interview/${Date.now()}`)
-  }
-
   return (
-    <div className="h-full w-full">
-      <p className="text-white dark:text-black">dashboard</p>
-      <Button onClick={sessionHandler}>Start session</Button>
-      <div className="p-4 rounded-md">
-        <CodeEditor />
-      </div>
-      <div className="h-56 w-56 bg-gray-700">
-        <SpeechRecognition />
-      </div>
+    <div className="h-full w-full p-6 space-y-6">
+      <Container>
+        <div>
+          <SelectRoles />
+        </div>
+        <div className="mt-4">
+          <DataVisualization />
+        </div>
+      </Container>
     </div>
-  )
+  );
 }
 
-export default DashboardPage
+export default DashboardPage;
