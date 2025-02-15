@@ -214,6 +214,20 @@ function InterviewPage() {
           <div className="col-span-2">
             <Avatar3D text={questionAnswerSets && questionAnswerSets[currentQuestionIndex].question || "No question found"} />
             <Webcam height={480} width={480} videoHeight={480} videoWidth={480} questionAnswerIndex={currentQuestionIndex} />
+            {/* transcript chatbox */}
+            {transcript && (
+              <div className="mt-2 text-sm italic text-gray-600 dark:text-gray-400">
+                {[...transcript
+                  .split(/\r?\n/)
+                  .filter(line => line.trim() !== "")
+                  .reverse()]
+                  .slice(0, 2)
+                  .reverse()
+                  .map((line, index) => (
+                    <p key={index}>{line}</p>
+                  ))}
+              </div>
+            )}
           </div>
         </div>
         :
@@ -227,6 +241,20 @@ function InterviewPage() {
             text={questionAnswerSets && questionAnswerSets[currentQuestionIndex].question || "No question found"}
           />
           <Webcam height={480} width={480} videoHeight={580} videoWidth={580} questionAnswerIndex={currentQuestionIndex} />
+          {/* transcript chatbox */}
+          {transcript && (
+            <div className="mt-2 text-sm italic text-gray-600 dark:text-gray-400">
+              {[...transcript
+                .split(/\r?\n/)
+                .filter(line => line.trim() !== "")
+                .reverse()]
+                .slice(0, 2)
+                .reverse()
+                .map((line, index) => (
+                  <p key={index}>{line}</p>
+                ))}
+            </div>
+          )}
         </div>
       }
     </div >
