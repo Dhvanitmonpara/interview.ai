@@ -168,6 +168,19 @@ function InterviewPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [candidate, navigate, setSocketId]);
 
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      return "Are you sure you want to leave? Your progress will be lost.";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
   return (
     <div className="">
       {/* Header */}
