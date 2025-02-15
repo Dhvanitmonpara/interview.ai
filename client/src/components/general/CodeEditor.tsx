@@ -12,6 +12,7 @@ interface CodeEditorProps {
 function CodeEditor() {
     const editorRef = useRef<CodeEditorProps | null>(null);
     const [value, setValue] = useState<string>('');
+    const [isTerminalOpen, setIsTerminalOpen] = useState(false);
     const [language, setLanguage] = useState<string>('javascript');
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,6 +29,7 @@ function CodeEditor() {
     return (
         <div className="col-span-5 max-h-[90vh] relative">
             <LanguageSelector language={language} ChangeLanguage={ChangeLanguage} />
+            
             <Editor
                 height="100%"
                 width="100%"

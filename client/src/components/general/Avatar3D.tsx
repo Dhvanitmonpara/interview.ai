@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Canvas, useLoader, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
-const Model = ({ visemeStrength }) => {
+const Model = ({ visemeStrength }: { visemeStrength: string }) => {
   const gltf = useLoader(GLTFLoader, "https://models.readyplayer.me/67b05852f9904b1648fe40fd.glb");
   const mouthMeshRef = useRef(null);
-  
+
   useEffect(() => {
     if (gltf.scene) {
       gltf.scene.traverse((child) => {
@@ -21,7 +21,7 @@ const Model = ({ visemeStrength }) => {
   useFrame(() => {
     if (mouthMeshRef.current) {
       const morphTargets = mouthMeshRef.current.morphTargetDictionary;
-      
+
       // Smooth transition (lerp) instead of instant switch
       if (morphTargets.mouthOpen !== undefined) {
         const index = morphTargets.mouthOpen;
@@ -33,11 +33,11 @@ const Model = ({ visemeStrength }) => {
   return <primitive object={gltf.scene} scale={[3, 1.8, 2]} />;
 };
 
-export default function ModelViewer() {
+export default function ModelViewer({ text }: { text: string }) {
   const [visemeStrength, setVisemeStrength] = useState(0);
   const [speaking, setSpeaking] = useState(false);
 
-  const speak = (text = "Hello, Dhvanit and all askedium member good night") => {
+  const speak = useCallback((text) => {
     if (speaking) return;
     setSpeaking(true);
 
@@ -59,25 +59,28 @@ export default function ModelViewer() {
     };
 
     synth.speak(utterance);
-  };
+  }, [speaking])
+
+  useEffect(() => {
+    if (text !== "No question found") {
+      const timeoutId = setTimeout(() => {
+        speak(text);
+      }, 4000);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [text, speak]);
 
   return (
-    <div className=" bg-gray-200 overflow-hidden" style={{ width: "25vw", height: "50vh", position: "absulate" }}>
-      <div className=" " style={{ width: "50vh", height: "80vw", position: "" }}>
+    <div className="relative bg-gray-800 overflow-hidden" style={{ width: "25rem", height: "20rem", position: "absulate" }}>
+      <div className=" " style={{ width: "25rem", height: "65rem" }}>
         <Canvas camera={{ position: [0, 3, 8], fov: 62 }} >
-        <ambientLight intensity={2} />
-        <directionalLight position={[0, -3, 5]} intensity={1} />
-        <Model visemeStrength={visemeStrength} />
-        <OrbitControls enableZoom={false} enableRotate={false} enablePan={false} />
-      </Canvas>
-        </div>
-      <button
-        onClick={() => speak()}
-        disabled={speaking}
-        style={{  position: "absolute",  top: "20px",left: "50%",transform: "translateX(-50%)",fontSize: "16px",cursor: "pointer",}}
-      >
-        {speaking ? "Speaking..." : "Speak"}
-      </button>
+          <ambientLight intensity={2} />
+          <directionalLight position={[0, -3, 5]} intensity={1} />
+          <Model visemeStrength={visemeStrength} />
+          <OrbitControls enableZoom={false} enableRotate={false} enablePan={false} />
+        </Canvas>
+      </div>
     </div>
   );
 }

@@ -204,13 +204,13 @@ function InterviewPage() {
         <div className="col-span-2">
           {/* webcam */}
           <Webcam questionAnswerIndex={currentQuestionIndex} />
-          <Avatar3D />
-            <div className="h-full w-full bg-red-500">
+          <Avatar3D text={questionAnswerSets && questionAnswerSets[currentQuestionIndex].question || "No question found"} />
+          <div className="h-full w-full bg-red-500">
             {/* avatar */}
             <p className="p-4">{questionAnswerSets && questionAnswerSets[currentQuestionIndex]?.question || "No question found"}</p>
+          </div>
         </div>
       </div>
-    </div>
     </div >
   );
 }
