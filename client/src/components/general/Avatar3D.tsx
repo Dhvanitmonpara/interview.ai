@@ -37,7 +37,7 @@ export default function ModelViewer({ text }: { text: string }) {
     if (text !== "No question found" && spokenText !== text) {
       const timeoutId = setTimeout(() => {
         speak(text);
-      }, 4000);
+      }, 1000);
 
       return () => clearTimeout(timeoutId);
     }
