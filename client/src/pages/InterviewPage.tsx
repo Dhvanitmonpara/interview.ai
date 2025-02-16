@@ -28,10 +28,10 @@ function InterviewPage() {
   const { transcript } = useAutoSpeechRecognizer(currentQuestionIndex);
 
   // helper function for generating next question using gemini API
-  const getNextQuestion = useCallback(async (transcribedText: string) => {
+  const getQuestion = useCallback(async (transcribedText: string, currentQuestionIndex: number) => {
     if (!candidate) return;
 
-    const roundAndTimeLimit = selectRoundAndTimeLimit(currentQuestionIndex + 1);
+    const roundAndTimeLimit = selectRoundAndTimeLimit(currentQuestionIndex);
 
     const data = {
       yearsOfExperience: candidate.yearsOfExperience,
@@ -59,11 +59,12 @@ function InterviewPage() {
     }
 
     return text;
-  }, [candidate, currentQuestionIndex]);
+  }, [candidate]);
 
   // main function to reset the question
   const handleResetQuestion = async () => {
     if (!questionAnswerSets) return;
+    console.log(questionAnswerSets)
 
     // Block multiple resets
     if (resettingQuestion) return;
@@ -79,7 +80,7 @@ function InterviewPage() {
 
       updateAnswer(transcript, currentQuestionIndex);
 
-      const newGeneratedQuestion = await getNextQuestion(transcript);
+      const newGeneratedQuestion = await getQuestion(transcript, currentQuestionIndex + 1);
 
       if (!newGeneratedQuestion) {
         toast({ title: "Something went wrong while generating question" });
@@ -111,18 +112,18 @@ function InterviewPage() {
   useEffect(() => {
     const initialSetup = async () => {
       if (!questionAnswerSets && candidate) {
-        const text = await getNextQuestion("")
+        const text = await getQuestion("", currentQuestionIndex)
         if (!text) {
           return
         }
-        addQuestionAnswerSet({ question: text, answer: "", round: "aptitude", timeLimit: 60 });
+        addQuestionAnswerSet({ question: text, answer: "", round: "technical", timeLimit: 180 });
         socket.emit("initial-setup", candidate)
-        socket.emit("initialize-new-question", { question: text, round: "aptitude", timeLimit: 60 })
+        socket.emit("initialize-new-question", { question: text, round: "technical", timeLimit: 180 })
       }
     }
     initialSetup()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addQuestionAnswerSet, candidate, getNextQuestion, socket])
+  }, [addQuestionAnswerSet, candidate, socket])
 
   // socket event handlers
   useEffect(() => {
