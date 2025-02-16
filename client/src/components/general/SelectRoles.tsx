@@ -24,20 +24,20 @@ function SelectRoles() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col items-center">
-      <h1 className="text-3xl font-bold my-4 mx-2 rounded-xl py-3 bg-blue-200 h-15 w-full text-center transition duration-300 hover:bg-blue-400 hover:text-white">
+    <div className="flex flex-col">
+      <h1 className=" text-3xl font-bold my-4 mx-4 rounded-xl py-1 h-15 w-fit text-left transition duration-300">
         Interview Option
       </h1>
 
       {/* Grid Layout: 2 Columns on Medium Screens & Above */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 h-full gap-10">
         {roles.map((role, index) => (
-          <Card
+          <Card 
             key={index}
-            className="dark:bg-[#212121] dark:text-neutral-300 w-[350px] cursor-pointer transition duration-300 hover:scale-105 hover:shadow-lg hover:bg-blue-100 dark:hover:bg-[#2a2a2a]"
+            className="dark:bg-[#212121] dark:text-neutral-300  mx-5 py-10 cursor-pointer transition duration-300 hover:scale-105 hover:shadow-lg hover:bg-blue-100 dark:hover:bg-[#2a2a2a]"
             onClick={() => navigate("/interview")}
           >
-            <CardHeader>
+            <CardHeader >
               <CardTitle className="text-sm font-medium">{role.title}</CardTitle>
             </CardHeader>
             <CardContent>
@@ -48,7 +48,7 @@ function SelectRoles() {
         
         {/* Add More Roles Card */}
         <Card
-          className="dark:bg-[#212121] dark:text-neutral-300 w-[350px] flex items-center justify-center cursor-pointer transition duration-300 hover:scale-105 hover:shadow-lg hover:bg-blue-100 dark:hover:bg-[#2a2a2a]"
+          className="dark:bg-[#212121] dark:text-neutral-300 w-[350px] mx-5 py-10  flex items-center justify-center cursor-pointer transition duration-300 hover:scale-105 hover:shadow-lg hover:bg-blue-100 dark:hover:bg-[#2a2a2a]"
           onClick={() => navigate("/bhai-roles page kaha hai")}
         >
           <CardContent className="flex items-center justify-center h-full">

@@ -44,7 +44,7 @@ function DataVisualization() {
     <>
     
       <Card className="h-50 w-9/12 mx-auto text-center  dark:bg-[#212121]">
-      <h1 className="text-3xl font-bold my-4 mx-2 rounded-xl py-3 bg-blue-200  h-15 text-center">
+      <h1 className="text-3xl font-bold my-4 mx-2 rounded-xl py-3   h-15 text-center">
   Interview Insights
 </h1>
 

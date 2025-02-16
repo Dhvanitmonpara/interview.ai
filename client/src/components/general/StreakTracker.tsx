@@ -44,8 +44,8 @@ const StreakCircle: React.FC = () => {
 
     return (
         <Card className="w-7/12 max-w-sm mx-auto p-4 text-center dark:bg-[#212121] ml-2">
-            <h1 className="text-3xl font-bold rounded-xl py-3 bg-blue-200  w-full text-center">
-  Strike Track
+            <h1 className="text-3xl font-bold rounded-xl py-3  w-full text-center">
+  Streak Track
 </h1>
 
             <CardHeader>
