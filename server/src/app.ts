@@ -234,7 +234,9 @@ io.on("connection", (socket) => {
 
 // Import routes
 import sessionRouter from "../routes/session.routes";
+import userRouter from "../routes/user.routes";
 app.use("/api/v1/sessions", sessionRouter);
+app.use("/api/v1/user", userRouter);
 
 // Export server and app
 export { app, server, runningInterviewSession };

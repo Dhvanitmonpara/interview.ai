@@ -5,7 +5,7 @@ import StreakTracker from "@/components/general/StreakTracker";
 import SessionInfoForm from "@/components/interview/SessionInfoForm";
 function DashboardPage() {
   return (
-    <div className="h-full w-full p-6 space-y-6">
+    <div className="h-full w-screen overflow-x-hidden space-y-6">
       <SessionInfoForm />
       <Container>
         <div>
