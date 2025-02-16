@@ -1,4 +1,5 @@
 import { toast } from "@/hooks/use-toast";
+import { useClerk } from "@clerk/clerk-react";
 import axios from "axios";
 import { FormEvent, useState } from "react";
 
@@ -19,6 +20,8 @@ const InterviewForm = () => {
     projects: "",
   });
 
+  const user = useClerk().user
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleChange = (e: any) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -33,6 +36,7 @@ const InterviewForm = () => {
       const data = {
         name: formData.name,
         phone: formData.phone,
+        email: user?.emailAddresses[0].emailAddress,
         linkedin: formData.linkedin,
         higherEducation: formData.higherEducation,
         college: formData.college,
