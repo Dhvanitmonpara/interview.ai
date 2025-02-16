@@ -22,6 +22,8 @@ function Header() {
             <NavLink to="/" className={({ isActive }) => (`font-semibold ${isActive ? "text-zinc-950 dark:text-zinc-100" : "text-gray-400 dark:text-zinc-400"}`)}>Home</NavLink>
             <NavLink to="/dashboard" className={({ isActive }) => (`font-semibold ${isActive ? "text-zinc-950 dark:text-zinc-100" : "text-gray-400 dark:text-zinc-400"}`)}>Dashboard</NavLink>
             <NavLink to="/about" className={({ isActive }) => (`font-semibold ${isActive ? "text-zinc-950 dark:text-zinc-100" : "text-gray-400 dark:text-zinc-400"}`)}>About</NavLink>
+            <NavLink to="/jobtracker" className={({ isActive }) => (`font-semibold ${isActive ? "text-zinc-950 dark:text-zinc-100" : "text-gray-400 dark:text-zinc-400"}`)}>Job Tracker</NavLink>
+            <NavLink to="/CourseSearch" className={({ isActive }) => (`font-semibold ${isActive ? "text-zinc-950 dark:text-zinc-100" : "text-gray-400 dark:text-zinc-400"}`)}>Course Searcher</NavLink>
           </ul>
         </div>
         <div className="flex gap-4">

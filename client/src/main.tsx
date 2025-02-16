@@ -14,6 +14,8 @@ import RootLayout from './layouts/RootLayout'
 import FeedbackPage from './pages/FeedbackPage'
 import InterviewPage from './pages/InterviewPage'
 import InterviewLayout from './layouts/InterviewLayout'
+import JobTracker from './pages/jobtracker'
+import CourseSearch from './pages/courseSearch'
 
 // Import your Publishable Key
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
@@ -56,6 +58,28 @@ const router = createBrowserRouter([
             path: ":id/feedback",
             element: <FeedbackPage />,
           },
+        ]
+      },
+      {
+        path: "jobtracker",
+        element: <JobTracker />,
+        children: [
+          {
+            path: "",
+            element: <JobTracker />,
+          },
+          
+        ]
+      },
+      {
+        path: "CourseSearch",
+        element: <CourseSearch />,
+        children: [
+          {
+            path: "",
+            element: <CourseSearch />,
+          },
+          
         ]
       },
       // auth routes
