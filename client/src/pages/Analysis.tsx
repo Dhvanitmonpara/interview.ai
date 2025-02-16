@@ -66,18 +66,6 @@ const AnalysisComponent = () => {
         </div>
       </div>
 
-      {/* Achievements */}
-      <div className="mt-6">
-        <h3 className="text-xl font-bold text-blue-600 flex items-center gap-2">
-          <FaTrophy /> Achievements
-        </h3>
-        <ul className="list-disc pl-6 text-gray-700">
-          {userData.achievements.map((achieve, index) => (
-            <li key={index}>{achieve}</li>
-          ))}
-        </ul>
-      </div>
-
       {/* Skills Bar Chart */}
       <div className="mt-10">
         <h3 className="text-xl font-bold text-blue-600">Skill Level Analysis</h3>
