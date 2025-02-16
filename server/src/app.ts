@@ -13,8 +13,10 @@ const io = new Server(server, {
 });
 
 const corsOptions = {
-  origin: process.env.ACCESS_CONTROL_ORIGIN,
+  origin: process.env.ACCESS_CONTROL_ORIGIN || "http://localhost:5173", // Default to localhost
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   optionsSuccessStatus: 200,
 };
 
@@ -234,7 +236,9 @@ io.on("connection", (socket) => {
 
 // Import routes
 import sessionRouter from "../routes/session.routes";
+import userRouter from "../routes/user.routes";
 app.use("/api/v1/sessions", sessionRouter);
+app.use("/api/v1/user", userRouter);
 
 // Export server and app
 export { app, server, runningInterviewSession };

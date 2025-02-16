@@ -1,6 +1,11 @@
+import { toast } from "@/hooks/use-toast";
+import { useClerk } from "@clerk/clerk-react";
+import axios from "axios";
 import { FormEvent, useState } from "react";
 
 const InterviewForm = () => {
+
+  const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -13,18 +18,61 @@ const InterviewForm = () => {
     achievements: "",
     skills: "",
     projects: "",
-    goals: "",
   });
+
+  const user = useClerk().user
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleChange = (e: any) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async(e: FormEvent) => {
     e.preventDefault();
-    console.log("Form Submitted:", formData);
-    // You can send data to your backend API here
+
+    setLoading(true)
+
+    try {
+      const data = {
+        name: formData.name,
+        phone: formData.phone,
+        email: user?.emailAddresses[0].emailAddress,
+        linkedin: formData.linkedin,
+        higherEducation: formData.higherEducation,
+        college: formData.college,
+        jobRole: formData.jobRole,
+        company: formData.company,
+        experience: Number(formData.experience),
+        achievements: formData.achievements,
+        skills: formData.skills,
+        projects: formData.projects,
+      }
+      const res = await axios.post(`${import.meta.env.VITE_SERVER_URI}/api/v1/user`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true
+      });
+
+      if (res.status === 201) {
+        {
+          toast({
+            title: "Form submitted successfully",
+          })
+        }
+      }
+
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          title: error.message,
+        })
+      } else {
+        console.log(error)
+      }
+    } finally {
+      setLoading(false)
+    }
   };
 
   return (
@@ -181,13 +229,14 @@ const InterviewForm = () => {
         {/* Submit Button */}
         <button
           type="submit"
+          disabled={loading}
           className="w-full bg-blue-500 text-white py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
         >
-          Submit
+          {loading ? "Submitting..." : "Submit"}
         </button>
       </form>
     </div>
   );
 };
 
-export default InterviewForm;
+export default InterviewForm

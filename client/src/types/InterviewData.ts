@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export type RoundType = "aptitude" | "technical" | "behavioral" | "system-design";
+export type RoundType = "aptitude" | "technical" | "behavioral" | "system-design" | "end";
 
 export type QuestionAnswerType = {
   question: string;

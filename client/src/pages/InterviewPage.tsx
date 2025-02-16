@@ -61,10 +61,18 @@ function InterviewPage() {
     return text;
   }, [candidate]);
 
+  const handleInterviewEnd = async () => {
+    socket.emit("interview-complete", {})
+
+    // TODO: api calls
+
+    navigate(`/interview/${socket.id}/feedback`)
+
+  }
+
   // main function to reset the question
   const handleResetQuestion = async () => {
     if (!questionAnswerSets) return;
-    console.log(questionAnswerSets)
 
     // Block multiple resets
     if (resettingQuestion) return;
@@ -72,13 +80,18 @@ function InterviewPage() {
 
     try {
 
-      console.log("runnn", currentQuestionIndex, questionAnswerSets[currentQuestionIndex].answer)
       socket.emit("update-question-data", {
         questionAnswerIndex: currentQuestionIndex,
         answer: transcript,
       });
 
       updateAnswer(transcript, currentQuestionIndex);
+
+      if (selectRoundAndTimeLimit(currentQuestionIndex + 1).round === "end") {
+        toast({ title: "You have reached the end of the interview" });
+        handleInterviewEnd()
+        return;
+      }
 
       const newGeneratedQuestion = await getQuestion(transcript, currentQuestionIndex + 1);
 
@@ -245,30 +258,32 @@ function InterviewPage() {
           </div>
         </div>
         :
-        <div className="flex justify-center items-center min-h-[80vh] space-x-2">
+        <div className="min-h-[80vh] space-x-2">
           <div className="h-20 px-20 font-semibold overflow-auto py-1 z-10 ">
-            <p className="">
+            <p className="text-xl">
               {questionAnswerSets && questionAnswerSets[currentQuestionIndex]?.question || "No question found"}
             </p>
           </div>
-          <Avatar3DVariant
-            text={questionAnswerSets && questionAnswerSets[currentQuestionIndex].question || "No question found"}
-          />
-          <Webcam height={480} width={480} videoHeight={580} videoWidth={580} questionAnswerIndex={currentQuestionIndex} />
-          {/* transcript chatbox */}
-          {transcript && (
-            <div className="mt-2 text-sm rounded-xl bg-blue-400 italic text-gray-400 dark:text-gray-400">
-              {[...transcript
-                .split(/\r?\n/)
-                .filter(line => line.trim() !== "")
-                .reverse()]
-                .slice(0, 2)
-                .reverse()
-                .map((line, index) => (
-                  <p key={index}>{line}</p>
-                ))}
-            </div>
-          )}
+          <div className="flex justify-center items-center">
+            <Avatar3DVariant
+              text={questionAnswerSets && questionAnswerSets[currentQuestionIndex].question || "No question found"}
+            />
+            <Webcam height={480} width={480} videoHeight={580} videoWidth={580} questionAnswerIndex={currentQuestionIndex} />
+            {/* transcript chatbox */}
+            {transcript && (
+              <div className="mt-2 text-sm rounded-xl bg-blue-400 italic text-gray-400 dark:text-gray-400">
+                {[...transcript
+                  .split(/\r?\n/)
+                  .filter(line => line.trim() !== "")
+                  .reverse()]
+                  .slice(0, 2)
+                  .reverse()
+                  .map((line, index) => (
+                    <p key={index}>{line}</p>
+                  ))}
+              </div>
+            )}
+          </div>
         </div>
       }
     </div >
