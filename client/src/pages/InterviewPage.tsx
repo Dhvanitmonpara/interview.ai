@@ -61,10 +61,15 @@ function InterviewPage() {
     return text;
   }, [candidate]);
 
+  const handleInterviewEnd = async() => {
+    socket.emit("interview-complete", {})
+
+    
+  }
+
   // main function to reset the question
   const handleResetQuestion = async () => {
     if (!questionAnswerSets) return;
-    console.log(questionAnswerSets)
 
     // Block multiple resets
     if (resettingQuestion) return;
@@ -72,13 +77,18 @@ function InterviewPage() {
 
     try {
 
-      console.log("runnn", currentQuestionIndex, questionAnswerSets[currentQuestionIndex].answer)
       socket.emit("update-question-data", {
         questionAnswerIndex: currentQuestionIndex,
         answer: transcript,
       });
 
       updateAnswer(transcript, currentQuestionIndex);
+
+      if(selectRoundAndTimeLimit(currentQuestionIndex + 1).round === "end") {
+        toast({ title: "You have reached the end of the interview" });
+        handleInterviewEnd()
+        return;
+      }
 
       const newGeneratedQuestion = await getQuestion(transcript, currentQuestionIndex + 1);
 
