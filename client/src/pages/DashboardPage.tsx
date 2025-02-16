@@ -1,5 +1,3 @@
-
-import CodeEditor from "@/components/general/CodeEditor";
 import Container from "@/components/general/Container";
 import DataVisualization from "@/components/general/DataVisualization";
 import SelectRoles from "@/components/general/SelectRoles";
@@ -14,9 +12,6 @@ function DashboardPage() {
         <div className="mt-4 flex justify-between">
           <DataVisualization />
           <StreakTracker />
-        </div>
-        <div>
-          <CodeEditor/>
         </div>
       </Container>
     </div>
