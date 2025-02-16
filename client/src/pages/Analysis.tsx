@@ -1,26 +1,8 @@
 import { FaUser, FaPhone, FaLinkedin, FaGraduationCap, FaBriefcase, FaTrophy, FaBullseye } from "react-icons/fa";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from "recharts";
 
-const AnalysisComponent = () => {
-  // Temporary Data
-  const userData = {
-    name: "John Doe",
-    phone: "+91 98765 43210",
-    linkedin: "https://linkedin.com/in/johndoe",
-    higherEducation: "Master's in Computer Science",
-    jobRole: "Full Stack Developer",
-    experience: 5,
-    achievements: ["Best Developer Award", "Hackathon Winner", "Employee of the Year"],
-    projects: ["E-commerce App", "AI Chatbot", "Portfolio Website"],
-    goals: "Become a CTO in 5 years",
-    skills: [
-      { name: "Aptitude", level: 85 },
-      { name: "System Design", level: 90 },
-      { name: "Technical", level: 80 },
-      { name: "Behavioral", level: 75 },
-    ],
-  };
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const AnalysisComponent = ({userData}: any) => {
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-xl rounded-2xl mt-10">
       <h2 className="text-3xl font-bold text-center mb-6 text-blue-600">Interview Analysis</h2>
