@@ -18,7 +18,6 @@ const saveFormData = async (req: Request, res: Response) => {
       achievements,
       skills,
       projects,
-      goals,
     } = req.body;
 
     // Check if any required field is missing or empty
@@ -45,7 +44,6 @@ const saveFormData = async (req: Request, res: Response) => {
       achievements,
       skills,
       projects,
-      goals,
     });
 
     res
