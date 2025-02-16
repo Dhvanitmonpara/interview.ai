@@ -8,6 +8,12 @@ const StreakCircle: React.FC = () => {
     const [streak, setStreak] = useState<number>(0);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
+    // Function to check if the user has already logged in today
+    const hasLoggedToday = (lastDate: Date | null): boolean => {
+        if (!lastDate) return false;
+        return new Date().toDateString() === lastDate.toDateString();
+    };
+
     // Load streak from LocalStorage
     useEffect(() => {
         const savedStreak = localStorage.getItem("streak");
@@ -17,30 +23,28 @@ const StreakCircle: React.FC = () => {
             const lastDate = new Date(savedDate);
             const today = new Date();
 
-            if (today.toDateString() === lastDate.toDateString()) {
-                setStreak(parseInt(savedStreak, 10));
+            if (hasLoggedToday(lastDate)) {
+                setStreak(parseInt(savedStreak, 10)); // Maintain streak if already logged today
             } else if (
                 today.getDate() - lastDate.getDate() === 1 &&
                 today.getMonth() === lastDate.getMonth() &&
                 today.getFullYear() === lastDate.getFullYear()
             ) {
-                setStreak(parseInt(savedStreak, 10));
+                setStreak(parseInt(savedStreak, 10) + 1); // Increment streak for consecutive days
+                localStorage.setItem("streak", (parseInt(savedStreak, 10) + 1).toString());
+                localStorage.setItem("lastUpdated", today.toISOString());
             } else {
-                setStreak(0); // Reset streak if a day is missed
+                setStreak(1); // Reset streak if a day is missed
+                localStorage.setItem("streak", "1");
+                localStorage.setItem("lastUpdated", today.toISOString());
             }
+        } else {
+            setStreak(1); // Start streak if no previous data
+            localStorage.setItem("streak", "1");
+            localStorage.setItem("lastUpdated", new Date().toISOString());
         }
         setLastUpdated(new Date());
     }, []);
-
-    // Function to increment the streak
-    const increaseStreak = () => {
-        const newStreak = streak + 1;
-        setStreak(newStreak);
-        setLastUpdated(new Date());
-
-        localStorage.setItem("streak", newStreak.toString());
-        localStorage.setItem("lastUpdated", new Date().toISOString());
-    };
 
     return (
         <Card className="w-7/12 max-w-sm mx-auto p-4 text-center dark:bg-[#212121] ml-2">
@@ -71,10 +75,6 @@ const StreakCircle: React.FC = () => {
                     {/* Streak Count in the Center */}
                     <span className="absolute text-3xl font-bold text-[#f59e0b] ">{streak}</span>
                 </div>
-
-                <Button onClick={increaseStreak} className="mt-4 w-full bg-blue-500 hover:bg-blue-400">
-                    Streaks
-                </Button>
             </CardContent>
         </Card>
     );

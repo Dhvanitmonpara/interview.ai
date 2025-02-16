@@ -1,28 +1,30 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
-
-interface FreeCourseCardProps {
-    title: string;
-    description: string;
-}
+import SessionInfoForm from "../interview/SessionInfoForm";
 
 const roles = [
-    { title: "Frontend Developer", description: "A Frontend Developer should be proficient in HTML, CSS, and JavaScript, along with frameworks ." },
-    { title: "Backend Developer", description: "A MERN Stack Developer must have expertise in MongoDB, Express.js, React, and Node.js, along with RESTful APIs," },
-    { title: "MERN Stack Developer", description: "A Java Developer should be skilled in Java, Spring Boot, Hibernate, and database management using SQL" }
+    { title: "Frontend Developer", description: "A Frontend Developer should be proficient in HTML, CSS, and JavaScript, along with frameworks." },
+    { title: "Backend Developer", description: "A Backend Developer should have expertise in Node.js, Express, databases, and RESTful APIs." },
+    { title: "MERN Stack Developer", description: "A MERN Stack Developer must have expertise in MongoDB, Express.js, React, and Node.js." }
 ];
 
 function SelectRoles() {
-    const navigate = useNavigate();
+    const [open, setOpen] = useState(false);
+    const [selectedRole, setSelectedRole] = useState<string | null>(null);
 
     return (
-        <div className="flex justify-between flex-wrap">
+        <div>
+            <h1>InterView Roles</h1>
+            <div className="flex justify-between flex-wrap">
             {roles.map((role, index) => (
-                <Card   
+                <Card
                     key={index}
-                    className="dark:bg-[#212121] dark:text-neutral-300 w-[310px] cursor-pointer"
-                    onClick={() => navigate("/interview")}
+                    className="dark:bg-[#212121] hover:dark:bg-[#303030] dark:text-neutral-300 w-[310px] cursor-pointer"
+                    onClick={() => {
+                        setSelectedRole(role.title); // Set selected role
+                        setOpen(true); // Open modal
+                    }}
                 >
                     <CardHeader>
                         <CardTitle className="text-sm font-medium">{role.title}</CardTitle>
@@ -34,12 +36,16 @@ function SelectRoles() {
             ))}
             <Card
                 className="dark:bg-[#212121] dark:text-neutral-300 w-72 flex items-center justify-center cursor-pointer"
-                onClick={() => navigate("/bhai-roles page kaha hai")}
+                onClick={() => setOpen(true)}
             >
                 <CardContent className="flex items-center justify-center h-full">
                     <Plus size={32} className="text-neutral-300" />
                 </CardContent>
             </Card>
+
+            {/* SessionInfoForm Dialog */}
+            <SessionInfoForm open={open} setOpen={setOpen} jobRole={selectedRole} />
+        </div>
         </div>
     );
 }

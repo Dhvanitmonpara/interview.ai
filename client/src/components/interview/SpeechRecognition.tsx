@@ -1,4 +1,3 @@
-import React from "react";
 import "regenerator-runtime/runtime";
 import useClipboard from "react-use-clipboard";
 import { Button } from "../ui/button";
@@ -17,7 +16,7 @@ const SpeechRecognitionComponent: React.FC = () => {
         return null;
     }
 
-    const handleCopy = () => {
+    const handleCopy = () => {  
         setCopyText(transcript);
         setCopied();
     };

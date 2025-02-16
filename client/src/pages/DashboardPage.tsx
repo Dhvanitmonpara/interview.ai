@@ -6,7 +6,7 @@ function DashboardPage() {
   return (
     <div className="h-full w-full p-6 space-y-6">
       <Container>
-        <div>
+        <div className="">
           <SelectRoles />
         </div>
         <div className="mt-4 flex justify-between">

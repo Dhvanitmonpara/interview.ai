@@ -1,9 +1,13 @@
 import Container from "@/components/general/Container";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { useUser } from "@clerk/clerk-react";
 import { FaVideo, FaCode, FaChartBar, FaUsers, FaComments } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 export default function LandingPage() {
+  const { } = useUser();
+  const navigate = useNavigate();
   return (
     <div className="w-full min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-all duration-500 overflow-x-hidden">
       <Container>
@@ -15,7 +19,7 @@ export default function LandingPage() {
             <p className="mt-4 text-xl text-gray-700 dark:text-gray-300">
               Enhance your interview preparation with AI-powered features.
             </p>
-            <Button className="mt-6 px-6 py-3 text-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-purple-500 hover:to-blue-500 transition-all duration-300 text-white">
+            <Button onClick={() => navigate("/auth/signin")} className="mt-6 px-6 py-3 text-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-purple-500 hover:to-blue-500 transition-all duration-300 text-white">
               Get Started
             </Button>
           </header>

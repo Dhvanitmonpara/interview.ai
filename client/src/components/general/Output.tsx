@@ -1,46 +1,7 @@
-import { useState } from 'react';
-import { Button } from '../ui/button';
-import { ExecuteCode } from './ExecuteCode';
-import { Loader } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-
-interface OutputProps {
-    language: string;
-    editorRef: React.RefObject<any>;
-}
-
-const Output: React.FC<OutputProps> = ({ language, editorRef }) => {
-    const [isLoading, setIsLoading] = useState(false);
-    const [isError, setIsError] = useState(false);
-    const [output, setOutput] = useState(null);
-
-    const { toast } = useToast();
-
-    const runCode = async () => {
-        const sourceCode = editorRef.current.getValue();
-        if (!sourceCode) return
-        try {
-            setIsLoading(true)
-            const { run: result } = await ExecuteCode(language, sourceCode);
-            setOutput(result.output);
-            result.stderr ? setIsError(true) : setIsError(false);
-        } catch (error) {
-            console.error('Error executing code:', error ? error : error);
-            toast({
-                variant: "destructive",
-                description: 'Error executing code'
-            })
-        } finally {
-            setIsLoading(false)
-        }
-    };
-
+const Output = ({ output, isError }: { output: string; isError: boolean }) => {
     return (
-        <div className='h-[400px] w-full bg-gray-200'>
-            <Button onClick={runCode} >
-                {isLoading ? <Loader className='animate-spin' /> : "Run"}
-            </Button>
-            <div className='dark:text-black p-5'>
+        <div className='h-[300px] absolute bottom-0 left-0 w-full bg-neutral-200 dark:bg-neutral-800 border-t-2 border-neutral-300 dark:border-neutral-700 text-zinc-900 dark:text-zinc-100'>
+            <div className='p-5'>
                 {output ? output : "Click 'Run Code' to see the output"}
                 {isError ? isError : null}
             </div>
