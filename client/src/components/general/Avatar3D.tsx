@@ -6,10 +6,12 @@ import Model from "./AvatarModel";
 export default function ModelViewer({ text }: { text: string }) {
   const [visemeStrength, setVisemeStrength] = useState(0);
   const [speaking, setSpeaking] = useState(false);
+  const [spokenText, setSpokenText] = useState(""); // Track last spoken text
 
   const speak = useCallback((text) => {
-    if (speaking) return;
+    if (speaking || spokenText === text) return; // Prevent repeat speech
     setSpeaking(true);
+    setSpokenText(text); // Mark text as spoken
 
     const synth = window.speechSynthesis;
     const utterance = new SpeechSynthesisUtterance(text);
@@ -29,17 +31,17 @@ export default function ModelViewer({ text }: { text: string }) {
     };
 
     synth.speak(utterance);
-  }, [speaking])
+  }, [speaking, spokenText]);
 
   useEffect(() => {
-    if (text !== "No question found") {
+    if (text !== "No question found" && spokenText !== text) {
       const timeoutId = setTimeout(() => {
         speak(text);
       }, 4000);
 
       return () => clearTimeout(timeoutId);
     }
-  }, [text, speak]);
+  }, [text, speak, spokenText]);
 
   return (
     <div className="relative bg-gray-800 overflow-hidden" style={{ width: "25rem", height: "20rem" }}>
