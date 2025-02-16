@@ -4,6 +4,7 @@ import SelectRoles from "@/components/general/SelectRoles";
 import StreakTracker from "@/components/general/StreakTracker";
 import SessionInfoForm from "@/components/interview/SessionInfoForm";
 import Analysis from "./Analysis";
+import Certificate from "@/components/general/Certificate";
 function DashboardPage() {
   return (
     <>
@@ -21,6 +22,7 @@ function DashboardPage() {
       </div>
       <div>
         <Analysis />
+        <Certificate/>
       </div>
     </>
   );
