@@ -3,8 +3,6 @@ import userModel from "../models/user.model";
 
 const saveFormData = async (req: Request, res: Response) => {
   try {
-    console.log(req.body);
-
     const {
       name,
       email,
@@ -30,6 +28,10 @@ const saveFormData = async (req: Request, res: Response) => {
       return;
     }
 
+    if (!req.body.username) {
+      req.body.username = `user_${Date.now()}`; // Assign a temporary unique value
+    }
+
     // Create and save new entry
     const newEntry = await userModel.create({
       name,
@@ -46,10 +48,17 @@ const saveFormData = async (req: Request, res: Response) => {
       projects,
     });
 
+    if (!newEntry) {
+      res.status(400).json({ error: "Failed to submit form" });
+      return;
+    }
+
     res
       .status(201)
       .json({ message: "Form submitted successfully!", data: newEntry });
+    return;
   } catch (error) {
+    console.log(error);
     if (error instanceof Error) {
       res.status(500).json({ error: error.message || "Failed to submit form" });
     } else {
@@ -62,9 +71,9 @@ const getFormData = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
 
-    if(!email){
+    if (!email) {
       res.status(400).json({ error: "Email is required" });
-      return
+      return;
     }
 
     const newEntry = await userModel.findOne({ email });
@@ -75,7 +84,9 @@ const getFormData = async (req: Request, res: Response) => {
     }
 
     await newEntry.save();
-    res.status(201).json({ message: "Form fetched successfully!", data: newEntry || "" });
+    res
+      .status(201)
+      .json({ message: "Form fetched successfully!", data: newEntry || "" });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch the form" });
   }
