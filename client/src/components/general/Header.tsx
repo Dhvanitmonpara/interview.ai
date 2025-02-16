@@ -1,5 +1,4 @@
 import { useAuth, UserButton } from "@clerk/clerk-react"
-import { Input } from "../ui/input"
 import { Link, NavLink } from "react-router-dom"
 import ThemeToggler from "./ThemeToggler"
 import { Loader } from "lucide-react";
@@ -13,7 +12,7 @@ function Header() {
 
   return (
     <>
-      <nav className="fixed h-16 border border-gray-200 dark:border-gray-800 px-32 top-0 left-0 w-full flex justify-between items-center p-4">
+      <nav className="fixed h-16 border border-gray-200 dark:border-gray-800 px-32 top-0 left-0 w-full flex justify-between p-4">
         <div className="flex items-center gap-5">
           <Link to="/">
             <img src="/logo.svg" alt="logo" />
