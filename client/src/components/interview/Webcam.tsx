@@ -215,7 +215,7 @@ function Webcam({ questionAnswerIndex, videoWidth, videoHeight, height, width }:
   }, [location.pathname, questionAnswerIndex, socket]);
 
   return (
-    <div style={{ position: "relative" }}>
+    <div className="bg-gray-900" style={{ position: "relative" }}>
       {location.pathname.includes("/interview") && (
         <>
           <video

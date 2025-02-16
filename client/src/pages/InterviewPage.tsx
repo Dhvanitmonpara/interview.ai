@@ -238,9 +238,9 @@ function InterviewPage() {
             </div>
             <CodeEditor />
           </div>
-          <div className="col-span-2">
+          <div className="col-span-2 space-y-1 p-2">
             <Avatar3D text={questionAnswerSets && questionAnswerSets[currentQuestionIndex].question || "No question found"} />
-            <Webcam height={480} width={480} videoHeight={480} videoWidth={480} questionAnswerIndex={currentQuestionIndex} />
+            <Webcam height={300} width={400} videoHeight={300} videoWidth={400} questionAnswerIndex={currentQuestionIndex} />
             {/* transcript chatbox */}
             {transcript && (
               <div className="mt-2 text-sm italic text-gray-600 dark:text-gray-400">

@@ -6,7 +6,6 @@ import { Loader } from "lucide-react";
 const navLinks = [
   { to: "/", label: "Home" },
   { to: "/dashboard", label: "Dashboard" },
-  { to: "/about", label: "About" },
 ];
 
 function Header() {
