@@ -6,7 +6,6 @@ const InterviewForm = () => {
     phone: "",
     linkedin: "",
     higherEducation: "",
-    ugDegree: "",
     college: "",
     jobRole: "",
     company: "",
@@ -14,7 +13,6 @@ const InterviewForm = () => {
     achievements: "",
     skills: "",
     projects: "",
-    preferredRole: "",
     goals: "",
   });
 
@@ -86,19 +84,6 @@ const InterviewForm = () => {
             value={formData.higherEducation}
             onChange={handleChange}
             placeholder="e.g. Master's Degree"
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        {/* UG Degree */}
-        <div >
-          <label className="block font-medium">UG Degree</label>
-          <input
-            type="text"
-            name="ugDegree"
-            value={formData.ugDegree}
-            onChange={handleChange}
-            placeholder="e.g. BCA, B.Tech"
             className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
