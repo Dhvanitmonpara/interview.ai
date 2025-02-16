@@ -22,7 +22,7 @@ function DashboardPage() {
       </div>
       <div>
         <Analysis />
-        <Certificate/>
+        <Certificate name="Dhvanit Monpara" score={80} role="Software Engineer"/>
       </div>
     </>
   );

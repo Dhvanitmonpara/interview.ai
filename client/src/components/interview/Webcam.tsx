@@ -45,7 +45,6 @@ function evaluateEmotionalState(expressions: ExpressionScores): string {
     anxious: { fearful: 0.6, surprised: 0.4 },
     frustrated: { angry: 1.0, disgusted: 0.8 },
     confident: { happy: 0.6, neutral: 0.4 },
-    excited: { happy: 0.7, surprised: 0.5 },
     sad: { sad: 1.0 },
     neutral: { neutral: 1.0 },
   };
