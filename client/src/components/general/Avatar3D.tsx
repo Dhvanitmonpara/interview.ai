@@ -8,7 +8,7 @@ export default function ModelViewer({ text }: { text: string }) {
   const [speaking, setSpeaking] = useState(false);
   const [spokenText, setSpokenText] = useState(""); // Track last spoken text
 
-  const speak = useCallback((text) => {
+  const speak = useCallback((text:string) => {
     if (speaking || spokenText === text) return; // Prevent repeat speech
     setSpeaking(true);
     setSpokenText(text); // Mark text as spoken
