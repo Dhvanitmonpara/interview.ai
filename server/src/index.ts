@@ -2,7 +2,7 @@ import connectDB from "../db/index"
 import dotenv from "dotenv"
 import { server } from "./app"
 
-const port = process.env.HTTP_PORT || 8000
+const port = process.env.HTTP_PORT || 1873
 
 dotenv.config({
     path: './.env'

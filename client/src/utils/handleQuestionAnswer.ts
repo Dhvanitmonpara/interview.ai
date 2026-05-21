@@ -1,7 +1,10 @@
 import { QuestionAnswerType, RoundType } from "@/types/InterviewData";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import axios from "axios";
 
-// Access your API key as an environment variable
+const GEMINI_URL =
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent";
+const MAX_RETRIES = 2;
+
 const apiKey = import.meta.env.VITE_GEMINI_KEY;
 if (!apiKey) {
   throw new Error(
@@ -9,8 +12,92 @@ if (!apiKey) {
   );
 }
 
-const genAI = new GoogleGenerativeAI(apiKey);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const getRetryDelay = (retryAfterHeader?: string, attempt = 0) => {
+  const retryAfter = Number(retryAfterHeader);
+
+  if (!Number.isNaN(retryAfter) && retryAfter > 0) {
+    return retryAfter * 1000;
+  }
+
+  return Math.min(1000 * Math.pow(2, attempt), 5000);
+};
+
+const callGemini = async (prompt: string) => {
+  let response;
+
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      response = await axios.post(
+        `${GEMINI_URL}?key=${apiKey}`,
+        {
+          contents: [
+            {
+              role: "user",
+              parts: [{ text: prompt }],
+            },
+          ],
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      break;
+    } catch (error) {
+      if (!axios.isAxiosError(error)) {
+        throw error;
+      }
+
+      const statusCode = error.response?.status;
+
+      if (statusCode === 429 && attempt < MAX_RETRIES) {
+        const retryAfter = error.response?.headers?.["retry-after"] as
+          | string
+          | undefined;
+        const delay = getRetryDelay(retryAfter, attempt);
+
+        await sleep(delay);
+        continue;
+      }
+
+      if (statusCode === 429) {
+        console.error("Please retry after a short delay.");
+        return null;
+      }
+
+      if (statusCode === 400) {
+        console.error("Invalid Gemini request payload");
+        return null;
+      }
+
+      const providerMessage =
+        error.response?.data?.error?.message ||
+        error.response?.statusText ||
+        "Gemini request failed";
+
+      console.error(providerMessage);
+      return null;
+    }
+  }
+
+  if (!response?.data) {
+    console.error("No response from AI");
+    return null;
+  }
+
+  const text = response.data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+
+  if (!text) {
+    console.error("No text response from AI");
+    return null;
+  }
+
+  return text.trim();
+};
 
 export type candidateDetailsType = {
   yearsOfExperience: number;
@@ -152,18 +239,9 @@ export async function generateNextQuestion(
 ): Promise<string | null> {
   try {
     const basePrompt = getBasePromptForNextQuestion(candidateDetails);
-    const result = await model.generateContent(basePrompt);
-    const text = result.response.text();
-    return text;
+    return await callGemini(basePrompt);
   } catch (error) {
-    if (
-      error instanceof Error &&
-      (error.message.includes("429") || error.message.includes("403"))
-    ) {
-      console.error("API Quota Exceeded or API Key Expired:", error.message);
-    } else {
-      console.error("Error generating content:", error);
-    }
+    console.error("Error generating content:", error);
     return null;
   }
 }
@@ -177,19 +255,9 @@ export async function generateFeedback(
       candidateDetails,
       questionAnswerSets
     );
-    const result = await model.generateContent(basePrompt);
-    const text = result.response.text();
-    console.log("feedback:", text);
-    return text;
+    return await callGemini(basePrompt);
   } catch (error) {
-    if (
-      error instanceof Error &&
-      (error.message.includes("429") || error.message.includes("403"))
-    ) {
-      console.error("API Quota Exceeded or API Key Expired:", error.message);
-    } else {
-      console.error("Error generating content:", error);
-    }
+    console.error("Error generating content:", error);
     return null;
   }
 }

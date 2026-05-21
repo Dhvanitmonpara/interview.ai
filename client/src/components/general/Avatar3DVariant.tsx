@@ -3,6 +3,9 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import Model from "./AvatarModel";
 
+const AmbientLight = "ambientLight" as any;
+const DirectionalLight = "directionalLight" as any;
+
 export default function ModelViewer({ text }: { text: string }) {
   const [visemeStrength, setVisemeStrength] = useState(0);
   const [speaking, setSpeaking] = useState(false);
@@ -71,9 +74,9 @@ export default function ModelViewer({ text }: { text: string }) {
     >
       <div style={{ width: "30rem", height: "85rem" }}>
         <Canvas camera={{ position: [0, 3, 8], fov: 62 }}>
-          <ambientLight intensity={2} />
-          <directionalLight position={[0, -3, 5]} intensity={1} />
-          <Model visemeStrength={visemeStrength} speaking={speaking} />
+          <AmbientLight intensity={2} />
+          <DirectionalLight position={[0, -3, 5]} intensity={1} />
+          <Model visemeStrength={visemeStrength} />
           <OrbitControls enableZoom={false} enableRotate={false} enablePan={false} />
         </Canvas>
       </div>
